@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr" class="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iloveresume — Créez votre CV gratuitement</title>
+  <meta name="description" content="Générateur de CV gratuit, sans inscription, 100% dans le navigateur. Exportez en PDF haute qualité." />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- pako (gzip for share-by-link) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200" style="font-family: Inter, sans-serif;">
+
+<!-- ═══════════════════════════════════════════════════ HEADER ═══ -->
+<header class="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
+  <div class="max-w-screen-2xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
+
+    <!-- Logo -->
+    <a href="index.html" class="flex items-center gap-2 shrink-0">
+      <span class="text-xl font-bold tracking-tight"><span class="text-[var(--accent)]">i</span>loveresume</span>
+    </a>
+
+    <!-- Center: Lang + Country -->
+    <div class="flex items-center gap-2 flex-1 justify-center">
+      <button id="btn-lang" class="pill-btn flex items-center gap-1.5" title="Langue">
+        <span id="lang-flag" class="text-base">🌐</span>
+        <span id="lang-label" class="text-sm font-medium">FR</span>
+      </button>
+    </div>
+
+    <!-- Right actions -->
+    <div class="flex items-center gap-2 shrink-0">
+      <span id="save-indicator" class="save-indicator" data-t="saved_indicator">Sauvegardé</span>
+      <button id="btn-history" class="pill-btn" title="Historique" aria-label="Historique des CV">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span class="hidden sm:inline text-sm" data-t="history">Historique</span>
+      </button>
+      <button id="btn-share" class="pill-btn" title="Partager" aria-label="Partager par lien">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+        <span class="hidden sm:inline text-sm" data-t="share">Partager</span>
+      </button>
+      <button id="btn-dark" class="pill-btn" title="Thème sombre" aria-label="Basculer thème sombre">
+        <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      </button>
+      <button id="btn-pdf" class="pdf-btn flex items-center gap-2" aria-label="Télécharger le PDF">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        <span class="text-sm font-semibold" data-t="download">Télécharger PDF</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════ MAIN LAYOUT ═══ -->
+<main class="max-w-screen-2xl mx-auto px-4 py-6 grid grid-cols-1 xl:grid-cols-[480px_1fr] gap-6 items-start">
+
+  <!-- ─────────────────── LEFT: Form ─────────────────── -->
+  <aside class="flex flex-col gap-0">
+
+    <!-- STEPPER -->
+    <div class="stepper flex items-center justify-between mb-4 px-1">
+      <div class="step-item active" data-step="0">
+        <div class="step-bubble">1</div>
+        <span class="step-label" data-t="step_profile">Profil</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" data-step="1">
+        <div class="step-bubble">2</div>
+        <span class="step-label" data-t="step_exp">Expériences</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" data-step="2">
+        <div class="step-bubble">3</div>
+        <span class="step-label" data-t="step_edu">Formation</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" data-step="3">
+        <div class="step-bubble">4</div>
+        <span class="step-label" data-t="step_skills">Compétences</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step-item" data-step="4">
+        <div class="step-bubble">5</div>
+        <span class="step-label" data-t="step_extras">Extras</span>
+      </div>
+    </div>
+
+    <!-- SAVE / IMPORT BAR -->
+    <div class="cv-persist-bar">
+      <div class="cv-persist-tooltip">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span data-t="persist_tip">Sauvegardez votre CV en JSON pour le retrouver et le modifier plus tard, même des mois après.</span>
+      </div>
+      <div class="cv-persist-actions">
+        <button id="btn-save-json" class="cv-persist-btn cv-persist-save">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          <span data-t="save_json">Sauvegarder</span>
+        </button>
+        <label id="btn-import-json" class="cv-persist-btn cv-persist-import cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
+          <span data-t="import_json">Importer un CV</span>
+          <input type="file" id="json-file-input" accept=".json" class="hidden" />
+        </label>
+      </div>
+    </div>
+
+    <!-- ══ STEP 0: PROFIL ══ -->
+    <div class="step-panel" id="panel-0">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span data-t="step_profile">Profil</span>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="acc-body">
+          <!-- Photo upload -->
+          <div class="photo-upload-zone mb-4" id="photo-zone">
+            <div id="photo-preview" class="hidden">
+              <img id="photo-img" src="" alt="Photo de profil" class="w-24 h-24 rounded-full object-cover border-4 border-[var(--accent)] mx-auto" />
+              <button id="btn-remove-photo" class="text-xs text-red-500 mt-2 hover:underline" data-t="remove_photo">Supprimer la photo</button>
+            </div>
+            <div id="photo-placeholder">
+              <label for="photo-input" class="cursor-pointer flex flex-col items-center gap-2 py-4 px-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl hover:border-[var(--accent)] transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span class="text-sm text-gray-500 dark:text-gray-400" data-t="add_photo">Ajouter une photo</span>
+              </label>
+              <input type="file" id="photo-input" accept="image/*" class="hidden" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 gap-3">
+            <div class="fl-wrap">
+              <input type="text" id="p-name" class="fl-input" placeholder=" " autocomplete="name" />
+              <label class="fl-label" for="p-name" data-t="full_name">Nom complet *</label>
+            </div>
+            <div class="fl-wrap">
+              <input type="text" id="p-title" class="fl-input" placeholder=" " />
+              <label class="fl-label" for="p-title" data-t="job_title">Titre / Poste visé *</label>
+            </div>
+            <div class="fl-wrap">
+              <textarea id="p-summary" class="fl-input" placeholder=" " rows="3" style="resize:vertical;"></textarea>
+              <label class="fl-label" for="p-summary" data-t="summary">Résumé / Accroche</label>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="fl-wrap">
+                <input type="email" id="p-email" class="fl-input" placeholder=" " autocomplete="email" />
+                <label class="fl-label" for="p-email">Email *</label>
+              </div>
+              <div class="fl-wrap">
+                <input type="tel" id="p-phone" class="fl-input" placeholder=" " autocomplete="tel" />
+                <label class="fl-label" for="p-phone" data-t="phone">Téléphone</label>
+              </div>
+            </div>
+            <div class="fl-wrap">
+              <input type="text" id="p-city" class="fl-input" placeholder=" " autocomplete="address-level2" />
+              <label class="fl-label" for="p-city" data-t="city">Ville / Pays</label>
+            </div>
+            <div class="fl-wrap">
+              <input type="url" id="p-linkedin" class="fl-input" placeholder=" " />
+              <label class="fl-label" for="p-linkedin">LinkedIn</label>
+            </div>
+            <div class="fl-wrap">
+              <input type="url" id="p-github" class="fl-input" placeholder=" " />
+              <label class="fl-label" for="p-github">GitHub / Portfolio</label>
+            </div>
+            <div class="fl-wrap">
+              <input type="url" id="p-website" class="fl-input" placeholder=" " />
+              <label class="fl-label" for="p-website" data-t="website">Site web</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 1: EXPÉRIENCES ══ -->
+    <div class="step-panel hidden" id="panel-1">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span data-t="step_exp">Expériences</span>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="acc-body">
+          <div id="exp-list" class="flex flex-col gap-4"></div>
+          <button id="btn-add-exp" class="add-btn mt-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span data-t="add_experience">Ajouter une expérience</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 2: FORMATION ══ -->
+    <div class="step-panel hidden" id="panel-2">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span data-t="step_edu">Formation</span>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="acc-body">
+          <div id="edu-list" class="flex flex-col gap-4"></div>
+          <button id="btn-add-edu" class="add-btn mt-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span data-t="add_education">Ajouter une formation</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 3: COMPÉTENCES ══ -->
+    <div class="step-panel hidden" id="panel-3">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span data-t="step_skills">Compétences</span>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="acc-body">
+          <div id="skills-list" class="flex flex-col gap-4"></div>
+          <button id="btn-add-skill" class="add-btn mt-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span data-t="add_skill_group">Ajouter une catégorie</span>
+          </button>
+        </div>
+      </div>
+      <!-- Projects (inside step 3) -->
+      <div class="section-card mt-4">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span data-t="projects">Projets</span>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="acc-body">
+          <div id="project-list" class="flex flex-col gap-4"></div>
+          <button id="btn-add-project" class="add-btn mt-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span data-t="add_project">Ajouter un projet</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 4: EXTRAS ══ -->
+    <div class="step-panel hidden" id="panel-4">
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span data-t="step_extras">Extras</span>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="acc-body">
+          <!-- Volunteer -->
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2" data-t="volunteer">Bénévolat</h4>
+            <div id="volunteer-list" class="flex flex-col gap-4"></div>
+            <button id="btn-add-volunteer" class="add-btn mt-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span data-t="add_volunteer">Ajouter une expérience bénévole</span>
+            </button>
+          </div>
+          <!-- Certifications -->
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2" data-t="certifications">Certifications</h4>
+            <div id="cert-list" class="flex flex-col gap-2"></div>
+            <button id="btn-add-cert" class="add-btn mt-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span data-t="add_certification">Ajouter</span>
+            </button>
+          </div>
+          <!-- Langues -->
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2" data-t="languages">Langues</h4>
+            <div id="langs-list" class="flex flex-col gap-2"></div>
+            <button id="btn-add-lang-item" class="add-btn mt-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span data-t="add_language">Ajouter une langue</span>
+            </button>
+          </div>
+          <!-- Centres d'intérêt -->
+          <div class="mb-4">
+            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2" data-t="interests">Centres d'intérêt</h4>
+            <div class="fl-wrap">
+              <input type="text" id="p-interests" class="fl-input" placeholder=" " />
+              <label class="fl-label" for="p-interests" data-t="interests_placeholder">Voyage, Photo, Sport… (séparés par virgule)</label>
+            </div>
+          </div>
+          <!-- Custom Sections -->
+          <div>
+            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2" data-t="custom_section">Section personnalisée</h4>
+            <div id="custom-sections-list" class="flex flex-col gap-4"></div>
+            <button id="btn-add-custom-section" class="add-btn mt-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span data-t="add_custom_section">Ajouter une section personnalisée</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Design & Options -->
+      <div class="section-card mt-4">
+        <div class="section-header" onclick="toggleSection(this)">
+          <span data-t="design_options">Design & Options</span>
+          <svg class="chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="acc-body">
+          <!-- Template -->
+          <div class="mb-4">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block" data-t="template">Template</label>
+            <div class="flex gap-2 flex-wrap">
+              <button class="tpl-pill active" data-tpl="modern" data-t="tpl_modern">Modern</button>
+              <button class="tpl-pill" data-tpl="classic" data-t="tpl_classic">Classic</button>
+              <button class="tpl-pill" data-tpl="bold" data-t="tpl_bold">Bold</button>
+              <button class="tpl-pill" data-tpl="compact" data-t="tpl_compact">Compact</button>
+            </div>
+          </div>
+
+          <!-- Couleur d'accent -->
+          <div class="mb-4">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block" data-t="accent_color">Couleur d'accent</label>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button class="color-dot active" data-color="#4f6ef7" style="background:#4f6ef7"></button>
+              <button class="color-dot" data-color="#10b981" style="background:#10b981"></button>
+              <button class="color-dot" data-color="#f59e0b" style="background:#f59e0b"></button>
+              <button class="color-dot" data-color="#ef4444" style="background:#ef4444"></button>
+              <button class="color-dot" data-color="#8b5cf6" style="background:#8b5cf6"></button>
+              <button class="color-dot" data-color="#ec4899" style="background:#ec4899"></button>
+              <button class="color-dot" data-color="#0ea5e9" style="background:#0ea5e9"></button>
+              <input type="color" id="custom-color" value="#4f6ef7" class="w-7 h-7 rounded-full cursor-pointer border-2 border-gray-300 dark:border-gray-600" title="Couleur personnalisée" />
+            </div>
+          </div>
+
+          <!-- Police -->
+          <div class="mb-4">
+            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block" data-t="font">Police</label>
+            <div class="flex gap-2 flex-wrap">
+              <button class="font-pill active" data-font="Inter">Inter</button>
+              <button class="font-pill" data-font="Roboto">Roboto</button>
+              <button class="font-pill" data-font="Lato">Lato</button>
+              <button class="font-pill" data-font="Playfair Display">Playfair</button>
+            </div>
+          </div>
+
+          <!-- Afficher photo toggle -->
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-700 dark:text-gray-300" data-t="show_photo">Afficher la photo dans le CV</span>
+            <label class="tog">
+              <input type="checkbox" id="tog-photo" checked />
+              <span class="tog-track"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation buttons -->
+    <div class="flex justify-between mt-5 gap-3">
+      <button id="btn-prev" class="nav-btn" onclick="prevStep()" disabled data-t="previous">← Précédent</button>
+      <button id="btn-next" class="nav-btn primary" onclick="nextStep()" data-t="next">Suivant →</button>
+    </div>
+
+  </aside>
+
+  <!-- ─────────────────── RIGHT: Preview ─────────────────── -->
+  <div class="preview-wrapper sticky top-20">
+    <div class="preview-scale-container">
+      <div id="cv-page" class="cv-page">
+        <!-- CV content injected by templates.js -->
+        <div class="cv-placeholder flex flex-col items-center justify-center h-full text-gray-300 dark:text-gray-700 gap-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <p class="text-sm" data-t="preview_placeholder">Remplissez le formulaire pour voir votre CV</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════ MODAL: LANGUE ═══ -->
+<div id="modal-lang" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Sélection de la langue">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 class="font-semibold text-lg" data-t="select_language">Choisir la langue</h2>
+      <button onclick="closeModal('modal-lang')" class="modal-close" aria-label="Fermer">×</button>
+    </div>
+    <div class="modal-body grid grid-cols-2 gap-2" id="lang-list"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ MODAL: HISTORIQUE ═══ -->
+<div id="modal-history" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Historique des CV">
+  <div class="modal-box max-w-2xl">
+    <div class="modal-header">
+      <h2 class="font-semibold text-lg" data-t="history">Historique</h2>
+      <button onclick="closeModal('modal-history')" class="modal-close" aria-label="Fermer">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="history-list" class="flex flex-col gap-3"></div>
+      <div id="history-empty" class="text-center text-gray-400 py-8 hidden" data-t="history_empty">Aucun CV dans l'historique</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ MODAL: PARTAGE ═══ -->
+<div id="modal-share" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Partager par lien">
+  <div class="modal-box max-w-lg">
+    <div class="modal-header">
+      <h2 class="font-semibold text-lg" data-t="share_title">Partager votre CV</h2>
+      <button onclick="closeModal('modal-share')" class="modal-close" aria-label="Fermer">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-3" data-t="share_desc">Ce lien contient toutes les données de votre CV. Aucune donnée n'est envoyée sur un serveur.</p>
+      <div class="flex gap-2">
+        <input type="text" id="share-url" class="fl-input flex-1 text-xs" readonly />
+        <button id="btn-copy-link" class="nav-btn primary shrink-0" data-t="copy_link">Copier</button>
+      </div>
+      <p id="share-copied" class="text-sm text-green-500 mt-2 hidden" data-t="link_copied">✓ Lien copié !</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ MOBILE PREVIEW FAB ═══ -->
+<button id="fab-preview" class="fab-preview" onclick="openMobilePreview()" aria-label="Voir mon CV">
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+  <span data-t="preview_cv">Voir mon CV</span>
+</button>
+
+<!-- ═══════════════════════════════════════ MODAL: MOBILE PREVIEW ═══ -->
+<div id="modal-mobile-preview" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Preview CV">
+  <div class="mobile-preview-box">
+    <div class="mobile-preview-header">
+      <span class="text-sm font-semibold" data-t="preview_cv">Voir mon CV</span>
+      <button onclick="closeMobilePreview()" class="modal-close" aria-label="Fermer">×</button>
+    </div>
+    <div class="mobile-preview-body">
+      <div id="mobile-cv-container" class="mobile-cv-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ TOAST ═══ -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-5 py-3 rounded-xl shadow-xl text-sm font-medium opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+
+<script src="templates.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
