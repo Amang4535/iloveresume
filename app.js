@@ -65,6 +65,9 @@ const T = {
     // ATS
     ats_checker: 'Score ATS', ats_paste_job: 'Collez l\'offre d\'emploi ici', ats_analyze: 'Analyser',
     ats_score: 'Score', ats_suggestions: 'Suggestions', ats_matched: 'Mots-clés trouvés', ats_missing: 'Mots-clés manquants',
+    ats_add_keywords: 'Ajoutez ces mots-clés à votre CV', ats_add_section: 'Ajoutez ou complétez la section',
+    ats_sec_summary: 'Résumé professionnel', ats_sec_experience: 'Expérience professionnelle', ats_sec_skills: 'Compétences', ats_sec_education: 'Formation', ats_sec_header: 'Nom et titre',
+    ats_fmt_chars: 'Supprimez les caractères spéciaux — les ATS peuvent ne pas les lire', ats_fmt_date: 'Utilisez un format de date cohérent (AAAA-MM)', ats_fmt_summary_long: 'Raccourcissez votre résumé (max 500 caractères)', ats_fmt_summary_short: 'Développez votre résumé (min 30 caractères)', ats_fmt_bullet: 'Raccourcissez vos bullet points (max 200 caractères)', ats_fmt_few: 'Ajoutez plus de bullet points à vos expériences', ats_fmt_contact: 'Ajoutez un email ou numéro de téléphone',
     // Content helpers
     content_helpers: 'Aide à la rédaction', action_verbs: 'Verbes d\'action', bullet_templates: 'Modèles de bullet points',
     weak_words_detected: 'Mots faibles détectés',
@@ -909,7 +912,7 @@ let extras = { certifications: [], languages: [], interests: '' };
 
 const $ = id => document.getElementById(id);
 const val = id => { const el = $(id); return el ? el.value.trim() : ''; };
-const t = k => (T[lang] && T[lang][k]) ? T[lang][k] : (T.fr[k] || k);
+const t = (k, fallback) => (T[lang] && T[lang][k]) ? T[lang][k] : (T.fr[k] || fallback || k);
 
 function showToast(msg, duration = 2500) {
   const el = $('toast');
@@ -2691,9 +2694,20 @@ $('btn-ats-analyze').addEventListener('click', () => {
     $('ats-score-num').textContent = result.score;
     $('ats-score-num').style.color = result.score >= 70 ? '#10b981' : result.score >= 40 ? '#f59e0b' : '#ef4444';
 
-    $('ats-suggestions-list').innerHTML = result.suggestions.map(s =>
-      `<div class="ats-suggestion"><span>💡</span><span>${s}</span></div>`
-    ).join('');
+    $('ats-suggestions-list').innerHTML = result.suggestions.map(s => {
+      let text = '';
+      if (s.type === 'keywords') {
+        text = t('ats_add_keywords', 'Add these keywords to your CV') + ': ' + s.keywords.join(', ');
+      } else if (s.type === 'section') {
+        const sn = { summary: t('ats_sec_summary', 'Professional summary'), experience: t('ats_sec_experience', 'Work experience'), skills: t('ats_sec_skills', 'Skills'), education: t('ats_sec_education', 'Education'), header: t('ats_sec_header', 'Name & job title') };
+        text = t('ats_add_section', 'Add or complete section') + ': ' + (sn[s.section] || s.section);
+      } else if (s.type === 'format') {
+        const fm = { special_chars: t('ats_fmt_chars', 'Remove special characters'), date_format: t('ats_fmt_date', 'Use consistent date format (YYYY-MM)'), summary_long: t('ats_fmt_summary_long', 'Shorten your summary'), summary_short: t('ats_fmt_summary_short', 'Expand your summary'), bullet_long: t('ats_fmt_bullet', 'Shorten bullet points'), few_bullets: t('ats_fmt_few', 'Add more bullet points'), no_contact: t('ats_fmt_contact', 'Add email or phone number') };
+        text = fm[s.issue] || s.issue;
+      }
+      const icon = s.priority === 'high' ? '🔴' : '🟡';
+      return `<div class="ats-suggestion"><span>${icon}</span><span>${text}</span></div>`;
+    }).join('');
 
     $('ats-matched-list').innerHTML = result.matchedKeywords.map(k =>
       `<span class="ats-tag ats-tag-match">${k}</span>`
