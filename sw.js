@@ -12,7 +12,6 @@ const ASSETS = [
   './templates.js',
   './ats.js',
   './content-library.js',
-  './ai.js',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js',

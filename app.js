@@ -68,9 +68,6 @@ const T = {
     // Content helpers
     content_helpers: 'Aide à la rédaction', action_verbs: 'Verbes d\'action', bullet_templates: 'Modèles de bullet points',
     weak_words_detected: 'Mots faibles détectés',
-    // AI
-    ai_generate: 'Générer avec IA', ai_improve: 'Améliorer avec IA', ai_settings: 'Paramètres IA',
-    ai_api_key: 'Clé API', ai_provider: 'Fournisseur', ai_generating: 'Génération en cours…',
     // Export
     download_docx: 'Télécharger DOCX',
     // Drag
@@ -133,8 +130,6 @@ const T = {
     ats_score: 'Score', ats_suggestions: 'Suggestions', ats_matched: 'Matched keywords', ats_missing: 'Missing keywords',
     content_helpers: 'Writing Help', action_verbs: 'Action verbs', bullet_templates: 'Bullet templates',
     weak_words_detected: 'Weak words detected',
-    ai_generate: 'Generate with AI', ai_improve: 'Improve with AI', ai_settings: 'AI Settings',
-    ai_api_key: 'API Key', ai_provider: 'Provider', ai_generating: 'Generating…',
     download_docx: 'Download DOCX',
     drag_hint: 'Drag to reorder',
     font_size: 'Font size', spacing: 'Spacing', sidebar_width: 'Sidebar width',
@@ -195,8 +190,6 @@ const T = {
     ats_score: 'Score', ats_suggestions: 'Vorschläge', ats_matched: 'Gefundene Schlüsselwörter', ats_missing: 'Fehlende Schlüsselwörter',
     content_helpers: 'Schreibhilfe', action_verbs: 'Aktionsverben', bullet_templates: 'Aufzählungsvorlagen',
     weak_words_detected: 'Schwache Wörter erkannt',
-    ai_generate: 'Mit KI generieren', ai_improve: 'Mit KI verbessern', ai_settings: 'KI-Einstellungen',
-    ai_api_key: 'API-Schlüssel', ai_provider: 'Anbieter', ai_generating: 'Wird generiert…',
     download_docx: 'DOCX herunterladen',
     drag_hint: 'Zum Neuordnen ziehen',
     font_size: 'Schriftgröße', spacing: 'Abstand', sidebar_width: 'Seitenleistenbreite',
@@ -257,8 +250,6 @@ const T = {
     ats_score: 'Puntuación', ats_suggestions: 'Sugerencias', ats_matched: 'Palabras clave encontradas', ats_missing: 'Palabras clave faltantes',
     content_helpers: 'Ayuda para redactar', action_verbs: 'Verbos de acción', bullet_templates: 'Plantillas de viñetas',
     weak_words_detected: 'Palabras débiles detectadas',
-    ai_generate: 'Generar con IA', ai_improve: 'Mejorar con IA', ai_settings: 'Configuración IA',
-    ai_api_key: 'Clave API', ai_provider: 'Proveedor', ai_generating: 'Generando…',
     download_docx: 'Descargar DOCX',
     drag_hint: 'Arrastrar para reordenar',
     font_size: 'Tamaño de fuente', spacing: 'Espaciado', sidebar_width: 'Ancho de barra lateral',
@@ -318,8 +309,6 @@ const T = {
     ats_score: 'Pontuação', ats_suggestions: 'Sugestões', ats_matched: 'Palavras-chave encontradas', ats_missing: 'Palavras-chave faltando',
     content_helpers: 'Ajuda na redação', action_verbs: 'Verbos de ação', bullet_templates: 'Modelos de tópicos',
     weak_words_detected: 'Palavras fracas detectadas',
-    ai_generate: 'Gerar com IA', ai_improve: 'Melhorar com IA', ai_settings: 'Configurações de IA',
-    ai_api_key: 'Chave API', ai_provider: 'Provedor', ai_generating: 'Gerando…',
     download_docx: 'Baixar DOCX', drag_hint: 'Arraste para reordenar',
     font_size: 'Tamanho da fonte', spacing: 'Espaçamento', sidebar_width: 'Largura da barra lateral',
     section_visibility: 'Secções visíveis',
@@ -378,8 +367,6 @@ const T = {
     ats_score: 'Punteggio', ats_suggestions: 'Suggerimenti', ats_matched: 'Parole chiave trovate', ats_missing: 'Parole chiave mancanti',
     content_helpers: 'Aiuto scrittura', action_verbs: 'Verbi d\'azione', bullet_templates: 'Modelli di elenchi',
     weak_words_detected: 'Parole deboli rilevate',
-    ai_generate: 'Genera con IA', ai_improve: 'Migliora con IA', ai_settings: 'Impostazioni IA',
-    ai_api_key: 'Chiave API', ai_provider: 'Fornitore', ai_generating: 'Generazione…',
     download_docx: 'Scarica DOCX', drag_hint: 'Trascina per riordinare',
     font_size: 'Dimensione carattere', spacing: 'Spaziatura', sidebar_width: 'Larghezza barra laterale',
     section_visibility: 'Sezioni visibili',
@@ -436,8 +423,6 @@ const T = {
     references_available: 'Referenties beschikbaar op aanvraag',
     ats_checker: 'ATS-score', ats_paste_job: 'Plak hier de vacaturetekst', ats_analyze: 'Analyseren',
     ats_score: 'Score', ats_suggestions: 'Suggesties', ats_matched: 'Gevonden trefwoorden', ats_missing: 'Ontbrekende trefwoorden',
-    ai_generate: 'Genereer met AI', ai_improve: 'Verbeter met AI', ai_settings: 'AI-instellingen',
-    ai_api_key: 'API-sleutel', ai_provider: 'Aanbieder', ai_generating: 'Bezig met genereren…',
     download_docx: 'DOCX downloaden', drag_hint: 'Sleep om te herschikken',
     font_size: 'Lettergrootte', spacing: 'Afstand', sidebar_width: 'Zijbalkbreedte',
     section_visibility: 'Zichtbare secties',
@@ -496,8 +481,6 @@ const T = {
     references_available: 'Referencje dostępne na żądanie',
     ats_checker: 'Wynik ATS', ats_paste_job: 'Wklej opis stanowiska tutaj', ats_analyze: 'Analizuj',
     ats_score: 'Wynik', ats_suggestions: 'Sugestie', ats_matched: 'Znalezione słowa kluczowe', ats_missing: 'Brakujące słowa kluczowe',
-    ai_generate: 'Generuj z AI', ai_improve: 'Popraw z AI', ai_settings: 'Ustawienia AI',
-    ai_api_key: 'Klucz API', ai_provider: 'Dostawca', ai_generating: 'Generowanie…',
     download_docx: 'Pobierz DOCX', drag_hint: 'Przeciągnij, aby zmienić kolejność',
     font_size: 'Rozmiar czcionki', spacing: 'Odstępy', sidebar_width: 'Szerokość paska bocznego',
     section_visibility: 'Widoczne sekcje',
@@ -556,8 +539,6 @@ const T = {
     references_available: 'Referanslar talep üzerine sunulabilir',
     ats_checker: 'ATS Puanı', ats_paste_job: 'İş tanımını buraya yapıştırın', ats_analyze: 'Analiz et',
     ats_score: 'Puan', ats_suggestions: 'Öneriler', ats_matched: 'Bulunan anahtar kelimeler', ats_missing: 'Eksik anahtar kelimeler',
-    ai_generate: 'AI ile oluştur', ai_improve: 'AI ile geliştir', ai_settings: 'AI Ayarları',
-    ai_api_key: 'API Anahtarı', ai_provider: 'Sağlayıcı', ai_generating: 'Oluşturuluyor…',
     download_docx: 'DOCX İndir', drag_hint: 'Yeniden sıralamak için sürükleyin',
     font_size: 'Yazı boyutu', spacing: 'Aralık', sidebar_width: 'Kenar çubuğu genişliği',
     section_visibility: 'Görünür bölümler',
@@ -616,8 +597,6 @@ const T = {
     references_available: '推荐人信息可应要求提供',
     ats_checker: 'ATS评分', ats_paste_job: '在此粘贴职位描述', ats_analyze: '分析',
     ats_score: '评分', ats_suggestions: '建议', ats_matched: '匹配的关键词', ats_missing: '缺少的关键词',
-    ai_generate: 'AI生成', ai_improve: 'AI优化', ai_settings: 'AI设置',
-    ai_api_key: 'API密钥', ai_provider: '服务商', ai_generating: '正在生成…',
     download_docx: '下载DOCX', drag_hint: '拖动排序',
     font_size: '字体大小', spacing: '间距', sidebar_width: '侧栏宽度',
     section_visibility: '可见部分',
@@ -676,8 +655,6 @@ const T = {
     references_available: '推薦者情報はご要望に応じて提供いたします',
     ats_checker: 'ATSスコア', ats_paste_job: '求人情報をここに貼り付け', ats_analyze: '分析',
     ats_score: 'スコア', ats_suggestions: '提案', ats_matched: '一致したキーワード', ats_missing: '不足キーワード',
-    ai_generate: 'AIで生成', ai_improve: 'AIで改善', ai_settings: 'AI設定',
-    ai_api_key: 'APIキー', ai_provider: 'プロバイダー', ai_generating: '生成中…',
     download_docx: 'DOCXダウンロード', drag_hint: 'ドラッグして並べ替え',
     font_size: 'フォントサイズ', spacing: '間隔', sidebar_width: 'サイドバー幅',
     section_visibility: '表示セクション',
@@ -736,8 +713,6 @@ const T = {
     references_available: '추천인 정보는 요청 시 제공 가능합니다',
     ats_checker: 'ATS 점수', ats_paste_job: '채용 공고를 여기에 붙여넣기', ats_analyze: '분석',
     ats_score: '점수', ats_suggestions: '제안', ats_matched: '일치 키워드', ats_missing: '누락 키워드',
-    ai_generate: 'AI로 생성', ai_improve: 'AI로 개선', ai_settings: 'AI 설정',
-    ai_api_key: 'API 키', ai_provider: '제공업체', ai_generating: '생성 중…',
     download_docx: 'DOCX 다운로드', drag_hint: '드래그하여 재정렬',
     font_size: '글꼴 크기', spacing: '간격', sidebar_width: '사이드바 너비',
     section_visibility: '표시할 섹션',
@@ -796,8 +771,6 @@ const T = {
     references_available: 'संदर्भ अनुरोध पर उपलब्ध',
     ats_checker: 'ATS स्कोर', ats_paste_job: 'नौकरी विवरण यहां चिपकाएं', ats_analyze: 'विश्लेषण',
     ats_score: 'स्कोर', ats_suggestions: 'सुझाव', ats_matched: 'मिले कीवर्ड', ats_missing: 'गायब कीवर्ड',
-    ai_generate: 'AI से बनाएं', ai_improve: 'AI से सुधारें', ai_settings: 'AI सेटिंग्स',
-    ai_api_key: 'API कुंजी', ai_provider: 'प्रदाता', ai_generating: 'बना रहा है…',
     download_docx: 'DOCX डाउनलोड', drag_hint: 'क्रम बदलने के लिए खींचें',
     font_size: 'फ़ॉन्ट आकार', spacing: 'अंतराल', sidebar_width: 'साइडबार चौड़ाई',
     section_visibility: 'दृश्य अनुभाग',
@@ -856,8 +829,6 @@ const T = {
     references_available: 'المراجع متاحة عند الطلب',
     ats_checker: 'نتيجة ATS', ats_paste_job: 'الصق وصف الوظيفة هنا', ats_analyze: 'تحليل',
     ats_score: 'النتيجة', ats_suggestions: 'اقتراحات', ats_matched: 'كلمات مفتاحية موجودة', ats_missing: 'كلمات مفتاحية مفقودة',
-    ai_generate: 'إنشاء بالذكاء الاصطناعي', ai_improve: 'تحسين بالذكاء الاصطناعي', ai_settings: 'إعدادات الذكاء الاصطناعي',
-    ai_api_key: 'مفتاح API', ai_provider: 'المزود', ai_generating: 'جارٍ الإنشاء…',
     download_docx: 'تحميل DOCX', drag_hint: 'اسحب لإعادة الترتيب',
     font_size: 'حجم الخط', spacing: 'التباعد', sidebar_width: 'عرض الشريط الجانبي',
     section_visibility: 'الأقسام المرئية',
@@ -2736,24 +2707,6 @@ $('btn-ats-analyze').addEventListener('click', () => {
   }
 });
 
-// ── AI Settings binding ───────────────────────────────────────
-
-$('btn-ai-save').addEventListener('click', () => {
-  const key = $('ai-api-key').value.trim();
-  const provBtn = document.querySelector('[data-ai-provider].active');
-  const provider = provBtn ? provBtn.dataset.aiProvider : 'openai';
-  if (typeof setAPIKey === 'function') setAPIKey(key, provider);
-  closeModal('modal-ai');
-  showToast('✓ API key saved');
-});
-
-document.querySelectorAll('[data-ai-provider]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('[data-ai-provider]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
-
 // ── Screen reader announcer ───────────────────────────────────
 
 function announce(msg) {
@@ -2783,13 +2736,6 @@ async function init() {
   // Lazy load feature modules
   loadScript('ats.js');
   loadScript('content-library.js');
-  loadScript('ai.js').then(() => { if (typeof initAI === 'function') initAI(); });
-
-  // Load stored AI key
-  const storedKey = localStorage.getItem('iloveresume_ai_key');
-  const storedProvider = localStorage.getItem('iloveresume_ai_provider') || 'openai';
-  if (storedKey && $('ai-api-key')) $('ai-api-key').value = storedKey;
-  document.querySelectorAll('[data-ai-provider]').forEach(b => b.classList.toggle('active', b.dataset.aiProvider === storedProvider));
 
   // Service Worker
   if ('serviceWorker' in navigator) {

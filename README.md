@@ -36,7 +36,6 @@ Most resume builders require an account, store your data on their servers, or lo
 | 🎨 **12 templates** | Modern · Classic · Bold · Compact · Executive · Creative · Technical · Minimal · Academic · Infographic · Elegant · Two Page |
 | 🗣️ **14 languages** | FR · EN · DE · ES · PT · IT · NL · PL · TR · ZH · JA · KO · HI · AR (RTL) |
 | 📄 **PDF export** | High-fidelity A4, multi-page with continuation headers |
-| 🤖 **AI-powered** | BYOK — generate summaries, improve bullets (OpenAI + Anthropic) |
 | 🎯 **ATS Score** | Client-side job description analyzer with keyword matching |
 | 🎛️ **Customisation** | Font size, spacing & sidebar width sliders, section toggles |
 | 🌙 **Dark mode** | Full dark theme for comfortable editing |
@@ -105,7 +104,6 @@ iloveresume/
 ├── templates.js    → 12 resume templates (pure functions → HTML strings)
 ├── app.js          → State, rendering, PDF export, i18n (14 langs), share, customisation
 ├── ats.js          → ATS score checker (client-side keyword analysis)
-├── ai.js           → AI integration (BYOK — OpenAI + Anthropic)
 ├── content-library.js → Action verbs, bullet templates, weak word detector
 └── sw.js           → Service Worker for offline support
 ```

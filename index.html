@@ -3,8 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iloveresume — Créez votre CV gratuitement</title>
-  <meta name="description" content="Générateur de CV gratuit, sans inscription, 100% dans le navigateur. Exportez en PDF haute qualité." />
+  <title>iloveresume — Free Resume Builder, No Sign-Up, 100% Private</title>
+  <meta name="description" content="Create professional, ATS-friendly resumes for free. 12 templates, 14 languages, PDF export. No sign-up, no server — everything runs in your browser." />
+  <meta name="keywords" content="resume builder, CV maker, free resume, ATS resume, PDF resume, no sign-up, private, open source" />
+  <meta name="author" content="uolaV" />
+  <link rel="canonical" href="https://uolav.github.io/iloveresume/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="iloveresume — Free Resume Builder, No Sign-Up, 100% Private" />
+  <meta property="og:description" content="Create professional, ATS-friendly resumes for free. 12 templates, 14 languages, PDF export. No sign-up, no server — 100% in your browser." />
+  <meta property="og:url" content="https://uolav.github.io/iloveresume/" />
+  <meta property="og:site_name" content="iloveresume" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="iloveresume — Free Resume Builder" />
+  <meta name="twitter:description" content="Create professional resumes for free. 12 templates, 14 languages, PDF export. 100% private, no sign-up." />
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -541,30 +556,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════ MODAL: AI SETTINGS ═══ -->
-<div id="modal-ai" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="AI Settings">
-  <div class="modal-box max-w-lg">
-    <div class="modal-header">
-      <h2 class="font-semibold text-lg" data-t="ai_settings">Paramètres IA</h2>
-      <button onclick="closeModal('modal-ai')" class="modal-close" aria-label="Fermer">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="mb-4">
-        <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block" data-t="ai_provider">Fournisseur</label>
-        <div class="flex gap-2">
-          <button class="tpl-pill active" data-ai-provider="openai" id="ai-prov-openai">OpenAI</button>
-          <button class="tpl-pill" data-ai-provider="anthropic" id="ai-prov-anthropic">Anthropic</button>
-        </div>
-      </div>
-      <div class="fl-wrap mb-4">
-        <input type="password" id="ai-api-key" class="fl-input" placeholder=" " />
-        <label class="fl-label" data-t="ai_api_key">Clé API</label>
-      </div>
-      <button id="btn-ai-save" class="nav-btn primary w-full">OK</button>
-      <p class="text-xs text-gray-400 mt-2 text-center">Votre clé est stockée uniquement dans votre navigateur (localStorage).</p>
-    </div>
-  </div>
-</div>
 
 <!-- ═══════════════════════════════════════ MOBILE PREVIEW FAB ═══ -->
 <button id="fab-preview" class="fab-preview" onclick="openMobilePreview()" aria-label="Voir mon CV">
@@ -589,7 +580,7 @@
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 px-5 py-3 rounded-xl shadow-xl text-sm font-medium opacity-0 transition-opacity duration-300 pointer-events-none"></div>
 
 <script src="templates.js"></script>
-<!-- ats.js, content-library.js, ai.js loaded on demand via loadScript() -->
+<!-- ats.js, content-library.js loaded on demand via loadScript() -->
 <script src="app.js"></script>
 </body>
 </html>

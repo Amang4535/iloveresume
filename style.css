@@ -1076,51 +1076,6 @@ textarea.fl-input:not(:placeholder-shown) ~ .fl-label {
   color: #fde68a;
 }
 
-/* ── AI Loading ─────────────────────────────────────────────── */
-.ai-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 9999px;
-  border: 1px solid #a78bfa;
-  background: #f5f3ff;
-  color: #7c3aed;
-  font-size: 0.72rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all .15s;
-}
-
-.ai-btn:hover {
-  background: #7c3aed;
-  color: #fff;
-}
-
-.dark .ai-btn {
-  background: #2e1065;
-  border-color: #7c3aed;
-  color: #c4b5fd;
-}
-
-.dark .ai-btn:hover {
-  background: #7c3aed;
-  color: #fff;
-}
-
-.ai-spinner {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spin .6s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
 
 /* ── Weak Word Highlight ────────────────────────────────────── */
 .weak-word-indicator {
