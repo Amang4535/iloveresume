@@ -17,6 +17,24 @@ function esc(s) {
     .replace(/"/g, '&quot;');
 }
 
+/**
+ * Sanitizes a user-provided URL for use in href attributes.
+ * Blocks javascript: and data: URIs which could execute scripts.
+ * Prepends https:// when no scheme is present.
+ */
+function safeUrl(url) {
+  if (!url) return '';
+  const s = String(url).trim();
+  // Block dangerous protocols
+  if (/^(javascript|data|vbscript):/i.test(s)) return '#';
+  // Pass through mailto: and tel: as-is
+  if (/^(mailto:|tel:)/i.test(s)) return esc(s);
+  // Pass through http(s):// as-is
+  if (/^https?:\/\//i.test(s)) return esc(s);
+  // No scheme: prepend https://
+  return esc('https://' + s);
+}
+
 function linkify(url) {
   if (!url) return '';
   return url.replace(/^https?:\/\/(www\.)?/, '');
@@ -60,7 +78,7 @@ function dateRange(start, end, current, t) {
 
 function contactLine(icon, value, href) {
   if (!value) return '';
-  const link = href ? `<a href="${esc(href)}" style="color:inherit;text-decoration:none;">${esc(value)}</a>` : esc(value);
+  const link = href ? `<a href="${safeUrl(href)}" style="color:inherit;text-decoration:none;">${esc(value)}</a>` : esc(value);
   return `<div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.3rem;font-size:0.78rem;">${icon} ${link}</div>`;
 }
 
@@ -181,7 +199,7 @@ function tplModern(cv, accent, font, t) {
       ${sectionTitle(t('projects') || 'Projets')}
       ${cv.projects.map(p => `
         <div class="cv-item" style="margin-bottom:0.875rem;">
-          <div style="font-weight:600;font-size:0.9rem;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗ ${linkify(p.url)}</a>` : ''}</div>
+          <div style="font-weight:600;font-size:0.9rem;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗ ${linkify(p.url)}</a>` : ''}</div>
           ${p.tech ? `<div style="font-size:0.75rem;color:#888;margin-top:0.15rem;">${esc(p.tech)}</div>` : ''}
           ${p.description ? `<p style="font-size:0.82rem;color:#444;margin:0.25rem 0 0;line-height:1.5;">${esc(p.description)}</p>` : ''}
         </div>`).join('')}
@@ -224,7 +242,7 @@ function tplModern(cv, accent, font, t) {
       ${sectionTitle(t('publications') || 'Publications')}
       ${cv.publications.map(p => `
         <div class="cv-item" style="margin-bottom:0.6rem;">
-          <div style="font-weight:600;font-size:0.88rem;">${esc(p.title)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.75rem;text-decoration:none;">↗</a>` : ''}</div>
+          <div style="font-weight:600;font-size:0.88rem;">${esc(p.title)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.75rem;text-decoration:none;">↗</a>` : ''}</div>
           ${p.authors ? `<div style="font-size:0.78rem;color:#555;">${esc(p.authors)}</div>` : ''}
           <div style="font-size:0.75rem;color:#888;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
         </div>`).join('')}
@@ -408,7 +426,7 @@ function tplClassic(cv, accent, font, t) {
     ${sectionTitle(t('publications') || 'Publications')}
     ${cv.publications.map(p => `
       <div class="cv-item" style="margin-bottom:0.6rem;">
-        <div style="font-weight:600;font-size:0.88rem;">${esc(p.title)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.75rem;text-decoration:none;">↗</a>` : ''}</div>
+        <div style="font-weight:600;font-size:0.88rem;">${esc(p.title)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.75rem;text-decoration:none;">↗</a>` : ''}</div>
         ${p.authors ? `<div style="font-size:0.78rem;color:#555;">${esc(p.authors)}</div>` : ''}
         <div style="font-size:0.75rem;color:#999;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
       </div>`).join('')}
@@ -545,7 +563,7 @@ function tplBold(cv, accent, font, t) {
     ${sectionTitle(t('projects') || 'Projets')}
     ${cv.projects.map(p => `
       <div class="cv-item" style="margin-bottom:0.875rem;padding-left:1rem;border-left:3px solid ${accent}33;">
-        <div style="font-weight:700;font-size:0.92rem;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗</a>` : ''}</div>
+        <div style="font-weight:700;font-size:0.92rem;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗</a>` : ''}</div>
         ${p.tech ? `<div style="font-size:0.75rem;color:#999;background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:9999px;display:inline-block;margin-top:0.2rem;">${esc(p.tech)}</div>` : ''}
         ${p.description ? `<p style="font-size:0.82rem;color:#444;margin:0.25rem 0 0;line-height:1.5;">${esc(p.description)}</p>` : ''}
       </div>`).join('')}
@@ -588,7 +606,7 @@ function tplBold(cv, accent, font, t) {
     ${sectionTitle(t('publications') || 'Publications')}
     ${cv.publications.map(p => `
       <div class="cv-item" style="margin-bottom:0.75rem;padding-left:1rem;border-left:3px solid ${accent}33;">
-        <div style="font-weight:700;font-size:0.92rem;">${esc(p.title)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗</a>` : ''}</div>
+        <div style="font-weight:700;font-size:0.92rem;">${esc(p.title)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗</a>` : ''}</div>
         ${p.authors ? `<div style="font-size:0.82rem;color:#666;">${esc(p.authors)}</div>` : ''}
         <div style="font-size:0.75rem;color:#999;background:#f3f4f6;padding:0.1rem 0.4rem;border-radius:9999px;display:inline-block;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
       </div>`).join('')}
@@ -872,7 +890,7 @@ function tplExecutive(cv, accent, font, t) {
       ${mainSection(t('projects') || 'Projets')}
       ${cv.projects.map(p => `
         <div class="cv-item" style="margin-bottom:0.9rem;">
-          <div style="font-weight:700;font-size:0.9rem;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗ ${linkify(p.url)}</a>` : ''}</div>
+          <div style="font-weight:700;font-size:0.9rem;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗ ${linkify(p.url)}</a>` : ''}</div>
           ${p.tech ? `<div style="font-size:0.75rem;color:#888;margin-top:0.1rem;">${esc(p.tech)}</div>` : ''}
           ${p.description ? `<p style="font-size:0.82rem;color:#444;margin:0.2rem 0 0;line-height:1.55;">${esc(p.description)}</p>` : ''}
         </div>`).join('')}
@@ -899,7 +917,7 @@ function tplExecutive(cv, accent, font, t) {
       ${mainSection(t('publications') || 'Publications')}
       ${cv.publications.map(p => `
         <div class="cv-item" style="margin-bottom:0.7rem;">
-          <div style="font-weight:600;font-size:0.85rem;">${p.url ? `<a href="${esc(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
+          <div style="font-weight:600;font-size:0.85rem;">${p.url ? `<a href="${safeUrl(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
           ${p.authors ? `<div style="font-size:0.78rem;color:#555;">${esc(p.authors)}</div>` : ''}
           <div style="font-size:0.75rem;color:#888;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
         </div>`).join('')}
@@ -1065,7 +1083,7 @@ function tplCreative(cv, accent, font, t) {
     ${sectionTitle(t('projects') || 'Projets')}
     ${cv.projects.map(p => `
       <div class="cv-item" style="margin-bottom:0.9rem;padding:0.75rem;background:#fafafa;border-radius:10px;">
-        <div style="font-weight:700;font-size:0.92rem;color:#222;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗ ${linkify(p.url)}</a>` : ''}</div>
+        <div style="font-weight:700;font-size:0.92rem;color:#222;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗ ${linkify(p.url)}</a>` : ''}</div>
         ${p.tech ? `<div style="font-size:0.72rem;color:${accent};margin-top:0.15rem;">${esc(p.tech)}</div>` : ''}
         ${p.description ? `<p style="font-size:0.82rem;color:#444;margin:0.25rem 0 0;line-height:1.55;">${esc(p.description)}</p>` : ''}
       </div>`).join('')}
@@ -1092,7 +1110,7 @@ function tplCreative(cv, accent, font, t) {
     ${sectionTitle(t('publications') || 'Publications')}
     ${cv.publications.map(p => `
       <div class="cv-item" style="margin-bottom:0.7rem;padding-left:0.75rem;border-left:2px solid ${accent}44;">
-        <div style="font-weight:600;font-size:0.85rem;">${p.url ? `<a href="${esc(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
+        <div style="font-weight:600;font-size:0.85rem;">${p.url ? `<a href="${safeUrl(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
         ${p.authors ? `<div style="font-size:0.78rem;color:#555;">${esc(p.authors)}</div>` : ''}
         <div style="font-size:0.75rem;color:#888;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
       </div>`).join('')}
@@ -1237,7 +1255,7 @@ function tplTechnical(cv, accent, font, t) {
     ${sectionTitle(t('projects') || 'Projets')}
     ${cv.projects.map(p => `
       <div class="cv-item" style="margin-bottom:1rem;padding:0.75rem;background:#f8f8f8;border:1px solid #e8e8e8;border-radius:6px;">
-        <div style="font-weight:700;font-size:0.9rem;font-family:${monoFont};color:#333;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.75rem;text-decoration:none;font-family:${monoFont};">↗ ${linkify(p.url)}</a>` : ''}</div>
+        <div style="font-weight:700;font-size:0.9rem;font-family:${monoFont};color:#333;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.75rem;text-decoration:none;font-family:${monoFont};">↗ ${linkify(p.url)}</a>` : ''}</div>
         ${p.tech ? `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-top:0.3rem;">${p.tech.split(',').map(tt => `<span style="background:#1e1e1e;color:#ce9178;padding:0.1rem 0.4rem;border-radius:3px;font-size:0.7rem;font-family:${monoFont};">${esc(tt.trim())}</span>`).join('')}</div>` : ''}
         ${p.description ? `<p style="font-size:0.82rem;color:#444;margin:0.3rem 0 0;line-height:1.5;">${esc(p.description)}</p>` : ''}
       </div>`).join('')}
@@ -1284,7 +1302,7 @@ function tplTechnical(cv, accent, font, t) {
     ${sectionTitle(t('publications') || 'Publications')}
     ${cv.publications.map(p => `
       <div class="cv-item" style="margin-bottom:0.7rem;font-family:${monoFont};">
-        <div style="font-weight:600;font-size:0.82rem;">${p.url ? `<a href="${esc(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
+        <div style="font-weight:600;font-size:0.82rem;">${p.url ? `<a href="${safeUrl(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
         ${p.authors ? `<div style="font-size:0.75rem;color:#555;">${esc(p.authors)}</div>` : ''}
         <div style="font-size:0.72rem;color:#888;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
       </div>`).join('')}
@@ -1435,7 +1453,7 @@ function tplMinimal(cv, accent, font, t) {
     ${sectionTitle(t('projects') || 'Projets')}
     ${cv.projects.map(p => `
       <div class="cv-item" style="margin-bottom:1rem;">
-        <div style="font-weight:500;font-size:0.9rem;color:#222;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:#999;font-size:0.78rem;text-decoration:none;font-weight:300;">↗ ${linkify(p.url)}</a>` : ''}</div>
+        <div style="font-weight:500;font-size:0.9rem;color:#222;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:#999;font-size:0.78rem;text-decoration:none;font-weight:300;">↗ ${linkify(p.url)}</a>` : ''}</div>
         ${p.tech ? `<div style="font-size:0.78rem;color:#bbb;font-weight:300;margin-top:0.1rem;">${esc(p.tech)}</div>` : ''}
         ${p.description ? `<p style="font-size:0.85rem;color:#555;font-weight:300;margin:0.2rem 0 0;line-height:1.6;">${esc(p.description)}</p>` : ''}
       </div>`).join('')}
@@ -1462,7 +1480,7 @@ function tplMinimal(cv, accent, font, t) {
     ${sectionTitle(t('publications') || 'Publications')}
     ${cv.publications.map(p => `
       <div class="cv-item" style="margin-bottom:0.75rem;">
-        <div style="font-weight:500;font-size:0.85rem;color:#222;">${p.url ? `<a href="${esc(p.url)}" style="color:#222;text-decoration:none;border-bottom:1px solid #ddd;">${esc(p.title)}</a>` : esc(p.title)}</div>
+        <div style="font-weight:500;font-size:0.85rem;color:#222;">${p.url ? `<a href="${safeUrl(p.url)}" style="color:#222;text-decoration:none;border-bottom:1px solid #ddd;">${esc(p.title)}</a>` : esc(p.title)}</div>
         ${p.authors ? `<div style="font-size:0.8rem;color:#888;font-weight:300;">${esc(p.authors)}</div>` : ''}
         <div style="font-size:0.75rem;color:#bbb;font-weight:300;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
       </div>`).join('')}
@@ -1583,7 +1601,7 @@ function tplAcademic(cv, accent, font, t) {
     <ol style="margin:0;padding-left:1.25rem;font-family:${serifFont};">
       ${cv.publications.map(p => `
         <li style="margin-bottom:0.6rem;font-size:0.85rem;line-height:1.6;">
-          ${p.authors ? `${esc(p.authors)}. ` : ''}<span style="font-style:italic;">${p.url ? `<a href="${esc(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</span>.${p.venue ? ` ${esc(p.venue)}.` : ''}${p.date ? ` ${formatDate(p.date)}.` : ''}
+          ${p.authors ? `${esc(p.authors)}. ` : ''}<span style="font-style:italic;">${p.url ? `<a href="${safeUrl(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</span>.${p.venue ? ` ${esc(p.venue)}.` : ''}${p.date ? ` ${formatDate(p.date)}.` : ''}
         </li>`).join('')}
     </ol>
     </div>` : '';
@@ -1619,7 +1637,7 @@ function tplAcademic(cv, accent, font, t) {
     ${sectionTitle(t('projects') || 'Projets de Recherche')}
     ${cv.projects.map(p => `
       <div class="cv-item" style="margin-bottom:0.9rem;">
-        <div style="font-family:${serifFont};font-weight:700;font-size:0.9rem;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗</a>` : ''}</div>
+        <div style="font-family:${serifFont};font-weight:700;font-size:0.9rem;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗</a>` : ''}</div>
         ${p.tech ? `<div style="font-family:${serifFont};font-size:0.78rem;color:#888;">${esc(p.tech)}</div>` : ''}
         ${p.description ? `<p style="font-family:${serifFont};font-size:0.85rem;color:#444;margin:0.2rem 0 0;line-height:1.6;text-align:justify;">${esc(p.description)}</p>` : ''}
       </div>`).join('')}
@@ -1822,7 +1840,7 @@ function tplInfographic(cv, accent, font, t) {
     ${sectionTitle(t('projects') || 'Projets', '🚀')}
     ${cv.projects.map(p => `
       <div class="cv-item" style="margin-bottom:0.9rem;padding:0.6rem;background:${accent}08;border-radius:8px;border-left:3px solid ${accent};">
-        <div style="font-weight:700;font-size:0.9rem;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗</a>` : ''}</div>
+        <div style="font-weight:700;font-size:0.9rem;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;">↗</a>` : ''}</div>
         ${p.tech ? `<div style="font-size:0.72rem;color:#888;margin-top:0.15rem;">${esc(p.tech)}</div>` : ''}
         ${p.description ? `<p style="font-size:0.82rem;color:#444;margin:0.2rem 0 0;line-height:1.5;">${esc(p.description)}</p>` : ''}
       </div>`).join('')}
@@ -1853,7 +1871,7 @@ function tplInfographic(cv, accent, font, t) {
       <div class="cv-item" style="margin-bottom:0.7rem;display:flex;align-items:flex-start;gap:0.5rem;">
         <div style="width:8px;height:8px;background:${accent};border-radius:50%;flex-shrink:0;margin-top:0.35rem;"></div>
         <div>
-          <div style="font-weight:600;font-size:0.85rem;">${p.url ? `<a href="${esc(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
+          <div style="font-weight:600;font-size:0.85rem;">${p.url ? `<a href="${safeUrl(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
           ${p.authors ? `<div style="font-size:0.78rem;color:#555;">${esc(p.authors)}</div>` : ''}
           <div style="font-size:0.75rem;color:#888;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
         </div>
@@ -2017,7 +2035,7 @@ function tplElegant(cv, accent, font, t) {
     ${sectionTitle(t('projects') || 'Projets')}
     ${cv.projects.map(p => `
       <div class="cv-item" style="margin-bottom:1rem;">
-        <div style="font-family:${elegantFont};font-weight:700;font-size:0.9rem;color:#1a1a1a;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;font-weight:300;">↗ ${linkify(p.url)}</a>` : ''}</div>
+        <div style="font-family:${elegantFont};font-weight:700;font-size:0.9rem;color:#1a1a1a;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.78rem;text-decoration:none;font-weight:300;">↗ ${linkify(p.url)}</a>` : ''}</div>
         ${p.tech ? `<div style="font-size:0.75rem;color:#aaa;font-style:italic;margin-top:0.1rem;">${esc(p.tech)}</div>` : ''}
         ${p.description ? `<p style="font-size:0.82rem;color:#555;font-weight:300;margin:0.2rem 0 0;line-height:1.6;">${esc(p.description)}</p>` : ''}
       </div>`).join('')}
@@ -2044,7 +2062,7 @@ function tplElegant(cv, accent, font, t) {
     ${sectionTitle(t('publications') || 'Publications')}
     ${cv.publications.map(p => `
       <div class="cv-item" style="margin-bottom:0.75rem;">
-        <div style="font-family:${elegantFont};font-weight:600;font-size:0.85rem;">${p.url ? `<a href="${esc(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
+        <div style="font-family:${elegantFont};font-weight:600;font-size:0.85rem;">${p.url ? `<a href="${safeUrl(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
         ${p.authors ? `<div style="font-size:0.78rem;color:#777;font-style:italic;">${esc(p.authors)}</div>` : ''}
         <div style="font-size:0.75rem;color:#aaa;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
       </div>`).join('')}
@@ -2207,7 +2225,7 @@ function tplTwoPage(cv, accent, font, t) {
     ${sectionTitle(t('projects') || 'Projets')}
     ${cv.projects.map(p => `
       <div class="cv-item" style="margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid #eee;">
-        <div style="font-weight:700;font-size:0.95rem;color:#111;">${esc(p.name)}${p.url ? ` <a href="${esc(p.url)}" style="color:${accent};font-size:0.82rem;text-decoration:none;">↗ ${linkify(p.url)}</a>` : ''}</div>
+        <div style="font-weight:700;font-size:0.95rem;color:#111;">${esc(p.name)}${p.url ? ` <a href="${safeUrl(p.url)}" style="color:${accent};font-size:0.82rem;text-decoration:none;">↗ ${linkify(p.url)}</a>` : ''}</div>
         ${p.tech ? `<div style="font-size:0.78rem;color:#888;margin-top:0.2rem;">${esc(p.tech)}</div>` : ''}
         ${p.description ? `<p style="font-size:0.88rem;color:#444;margin:0.3rem 0 0;line-height:1.6;">${esc(p.description)}</p>` : ''}
       </div>`).join('')}
@@ -2234,7 +2252,7 @@ function tplTwoPage(cv, accent, font, t) {
     ${sectionTitle(t('publications') || 'Publications')}
     ${cv.publications.map(p => `
       <div class="cv-item" style="margin-bottom:0.9rem;padding-bottom:0.75rem;border-bottom:1px solid #f0f0f0;">
-        <div style="font-weight:600;font-size:0.88rem;">${p.url ? `<a href="${esc(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
+        <div style="font-weight:600;font-size:0.88rem;">${p.url ? `<a href="${safeUrl(p.url)}" style="color:${accent};text-decoration:none;">${esc(p.title)}</a>` : esc(p.title)}</div>
         ${p.authors ? `<div style="font-size:0.82rem;color:#555;margin-top:0.15rem;">${esc(p.authors)}</div>` : ''}
         <div style="font-size:0.78rem;color:#888;margin-top:0.1rem;">${p.venue ? esc(p.venue) : ''}${p.date ? ` · ${formatDate(p.date)}` : ''}</div>
       </div>`).join('')}

@@ -3510,8 +3510,8 @@ function loadState() {
 function syncDesignUI() {
   document.querySelectorAll('.tpl-pill').forEach(b => b.classList.toggle('active', b.dataset.tpl === template));
   document.querySelectorAll('.font-pill').forEach(b => b.classList.toggle('active', b.dataset.font === cvFont));
-  $('tog-photo').checked = showPhoto;
-  $('custom-color').value = accentColor;
+  const togPhoto = $('tog-photo'); if (togPhoto) togPhoto.checked = showPhoto;
+  const customColor = $('custom-color'); if (customColor) customColor.value = accentColor;
   document.querySelectorAll('.color-dot').forEach(b => b.classList.toggle('active', b.dataset.color === accentColor));
   // Sliders
   const sliderFS = $('slider-font-size');
@@ -3662,8 +3662,7 @@ $('json-file-input').addEventListener('change', e => {
   reader.onload = ev => {
     try {
       importState(ev.target.result);
-      renderCV();
-      saveState();
+      commitChange();
       showToast(T[lang]?.imported_json || 'CV importé ✓');
     } catch {
       showToast(T[lang]?.import_error || 'Fichier invalide');
@@ -3712,9 +3711,7 @@ function renderAll() {
   renderLangItems();
 }
 
-function renderCV() {
-  renderPreview();
-}
+// renderCV() removed — use commitChange() (saveState + renderPreview) instead
 
 // ── Mobile Preview ───────────────────────────────────────────
 
