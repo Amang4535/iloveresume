@@ -33,12 +33,20 @@ function bulletsHtml(text) {
 
 function formatDate(d) {
   if (!d) return '';
-  // Input: YYYY-MM → Month YYYY
+  // Input: YYYY-MM → Month YYYY (locale-aware via Intl)
   const [y, m] = d.split('-');
   if (!y) return d;
   if (!m) return y;
-  const months = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-  return `${months[parseInt(m,10)-1] || m} ${y}`;
+  try {
+    // `lang` is defined in app.js (same global scope), available at call time
+    const locale = (typeof lang !== 'undefined' && lang) ? lang : 'fr';
+    return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short' })
+      .format(new Date(parseInt(y, 10), parseInt(m, 10) - 1, 1));
+  } catch (_) {
+    // Fallback: neutral short month
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[parseInt(m, 10) - 1] || m} ${y}`;
+  }
 }
 
 function dateRange(start, end, current, t) {

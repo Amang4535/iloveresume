@@ -1734,39 +1734,43 @@ const T = {
   },
 };
 
-function flagImg(country, alt) {
-  return `<img src="https://flagcdn.com/w40/${country}.png" alt="${alt}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;display:inline-block;vertical-align:middle;">`;
+// Emoji flags: fully offline, no external dependency.
+// Uses Unicode Regional Indicator Symbols (supported on all modern OS).
+function flagEmoji(iso2) {
+  return iso2.toUpperCase().replace(/./g,
+    c => String.fromCodePoint(0x1F1E6 - 65 + c.charCodeAt(0))
+  );
 }
 
 const LANGS = [
-  { code: 'fr', label: 'Français', flag: flagImg('fr','FR') },
-  { code: 'en', label: 'English',  flag: flagImg('gb','GB') },
-  { code: 'de', label: 'Deutsch',  flag: flagImg('de','DE') },
-  { code: 'es', label: 'Español',  flag: flagImg('es','ES') },
-  { code: 'pt', label: 'Português', flag: flagImg('pt','PT') },
-  { code: 'it', label: 'Italiano', flag: flagImg('it','IT') },
-  { code: 'nl', label: 'Nederlands', flag: flagImg('nl','NL') },
-  { code: 'pl', label: 'Polski', flag: flagImg('pl','PL') },
-  { code: 'tr', label: 'Türkçe', flag: flagImg('tr','TR') },
-  { code: 'zh', label: '中文', flag: flagImg('cn','CN') },
-  { code: 'ja', label: '日本語', flag: flagImg('jp','JP') },
-  { code: 'ko', label: '한국어', flag: flagImg('kr','KR') },
-  { code: 'hi', label: 'हिन्दी', flag: flagImg('in','IN') },
-  { code: 'ar', label: 'العربية', flag: flagImg('sa','SA') },
-  { code: 'ru', label: 'Русский', flag: flagImg('ru','RU') },
-  { code: 'he', label: 'עברית', flag: flagImg('il','IL') },
-  { code: 'sv', label: 'Svenska', flag: flagImg('se','SE') },
-  { code: 'id', label: 'Bahasa Indonesia', flag: flagImg('id','ID') },
-  { code: 'ro', label: 'Română', flag: flagImg('ro','RO') },
-  { code: 'cs', label: 'Čeština', flag: flagImg('cz','CZ') },
-  { code: 'uk', label: 'Українська', flag: flagImg('ua','UA') },
-  { code: 'el', label: 'Ελληνικά', flag: flagImg('gr','GR') },
-  { code: 'hu', label: 'Magyar', flag: flagImg('hu','HU') },
-  { code: 'nb', label: 'Norsk', flag: flagImg('no','NO') },
-  { code: 'da', label: 'Dansk', flag: flagImg('dk','DK') },
-  { code: 'fi', label: 'Suomi', flag: flagImg('fi','FI') },
-  { code: 'vi', label: 'Tiếng Việt', flag: flagImg('vn','VN') },
-  { code: 'th', label: 'ไทย', flag: flagImg('th','TH') },
+  { code: 'fr', label: 'Français',          flag: flagEmoji('fr') },
+  { code: 'en', label: 'English',            flag: flagEmoji('gb') },
+  { code: 'de', label: 'Deutsch',            flag: flagEmoji('de') },
+  { code: 'es', label: 'Español',            flag: flagEmoji('es') },
+  { code: 'pt', label: 'Português',          flag: flagEmoji('pt') },
+  { code: 'it', label: 'Italiano',           flag: flagEmoji('it') },
+  { code: 'nl', label: 'Nederlands',         flag: flagEmoji('nl') },
+  { code: 'pl', label: 'Polski',             flag: flagEmoji('pl') },
+  { code: 'tr', label: 'Türkçe',             flag: flagEmoji('tr') },
+  { code: 'zh', label: '中文',               flag: flagEmoji('cn') },
+  { code: 'ja', label: '日本語',             flag: flagEmoji('jp') },
+  { code: 'ko', label: '한국어',             flag: flagEmoji('kr') },
+  { code: 'hi', label: 'हिन्दी',            flag: flagEmoji('in') },
+  { code: 'ar', label: 'العربية',            flag: flagEmoji('sa') },
+  { code: 'ru', label: 'Русский',            flag: flagEmoji('ru') },
+  { code: 'he', label: 'עברית',              flag: flagEmoji('il') },
+  { code: 'sv', label: 'Svenska',            flag: flagEmoji('se') },
+  { code: 'id', label: 'Bahasa Indonesia',   flag: flagEmoji('id') },
+  { code: 'ro', label: 'Română',             flag: flagEmoji('ro') },
+  { code: 'cs', label: 'Čeština',            flag: flagEmoji('cz') },
+  { code: 'uk', label: 'Українська',         flag: flagEmoji('ua') },
+  { code: 'el', label: 'Ελληνικά',           flag: flagEmoji('gr') },
+  { code: 'hu', label: 'Magyar',             flag: flagEmoji('hu') },
+  { code: 'nb', label: 'Norsk',              flag: flagEmoji('no') },
+  { code: 'da', label: 'Dansk',              flag: flagEmoji('dk') },
+  { code: 'fi', label: 'Suomi',              flag: flagEmoji('fi') },
+  { code: 'vi', label: 'Tiếng Việt',         flag: flagEmoji('vn') },
+  { code: 'th', label: 'ไทย',               flag: flagEmoji('th') },
 ];
 
 // ── Lazy script loader ────────────────────────────────────────
@@ -1817,6 +1821,57 @@ let extras = { certifications: [], languages: [], interests: '' };
 
 // ── Utilities ─────────────────────────────────────────────────
 
+/**
+ * Generates a collision-safe integer ID for CV section entries.
+ * Replaces the scattered `genId()` pattern.
+ */
+function genId() {
+  return Date.now() * 1000 + Math.floor(Math.random() * 1000);
+}
+
+/**
+ * Commits a state change: persists to localStorage and re-renders the preview.
+ * Use instead of the `commitChange();` pair everywhere.
+ */
+function commitChange() {
+  commitChange();
+}
+
+/**
+ * Updates the visible header label of the nearest `.entry-item` ancestor.
+ * @param {Element} el   - any element inside an .entry-item
+ * @param {string}  text - the new label text
+ */
+function refreshHeader(el, text) {
+  const header = el.closest('.entry-item')
+    ?.querySelector('.entry-header > span:not(.drag-handle)');
+  if (header) header.textContent = text;
+}
+
+/**
+ * Attaches a single delegated input+change listener to a list container.
+ * Any input/textarea/select with [data-field] and [data-id] inside the container
+ * will automatically update the matching entry in `arr` and call commitChange().
+ *
+ * @param {HTMLElement} listEl     - the container element
+ * @param {Array}       arr        - array of objects with numeric `.id` property
+ * @param {Function}    [onUpdate] - optional callback(entry, field, el) for side-effects
+ */
+function bindDelegated(listEl, arr, onUpdate) {
+  function handler(e) {
+    const field = e.target.dataset.field;
+    if (!field) return;
+    const id = parseFloat(e.target.dataset.id);
+    const entry = arr.find(x => x.id === id);
+    if (!entry) return;
+    entry[field] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    onUpdate?.(entry, field, e.target);
+    commitChange();
+  }
+  listEl.addEventListener('input', handler);
+  listEl.addEventListener('change', handler);
+}
+
 const $ = id => document.getElementById(id);
 const val = id => { const el = $(id); return el ? el.value.trim() : ''; };
 const t = (k, fallback) => (T[lang] && T[lang][k]) ? T[lang][k] : (T.fr[k] || fallback || k);
@@ -1862,17 +1917,25 @@ function initLang() {
   updateLangUI();
 }
 
+// RTL languages that need a specific font loaded automatically
+const LANG_FONT_MAP = {
+  ar: 'Noto Sans Arabic',
+  he: 'Noto Sans Arabic', // Hebrew also benefits from Noto Sans
+};
+
 function setLang(code) {
   if (!T[code]) return;
   lang = code;
   localStorage.setItem('iloveresume_lang', code);
+  // Auto-load the font required for this language (e.g. Noto Arabic for ar/he)
+  if (LANG_FONT_MAP[code]) ensureFontLoaded(LANG_FONT_MAP[code]);
   updateLangUI();
   renderAllTranslations();
   renderPreview();
   closeModal('modal-lang');
 }
 
-const RTL_LANGS = ['ar'];
+const RTL_LANGS = ['ar', 'he'];
 
 function updateLangUI() {
   const l = LANGS.find(x => x.code === lang) || LANGS[0];
@@ -1968,8 +2031,7 @@ function collectProfile() {
     website:  val('p-website'),
     photoB64: profile.photoB64,
   };
-  saveState();
-  renderPreview();
+  commitChange();
 }
 
 function populateProfile() {
@@ -1983,15 +2045,37 @@ function populateProfile() {
 
 // ── Photo upload ──────────────────────────────────────────────
 
+// ── Photo resize helper ───────────────────────────────────────
+// Caps photo at MAX_PHOTO_PX on its longest side and re-encodes as JPEG
+// to prevent localStorage quota exhaustion with large images.
+const MAX_PHOTO_PX = 300;
+
+function resizePhotoBase64(dataUrl, callback) {
+  const img = new Image();
+  img.onload = () => {
+    const scale = Math.min(1, MAX_PHOTO_PX / Math.max(img.width, img.height));
+    const w = Math.round(img.width * scale);
+    const h = Math.round(img.height * scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    callback(canvas.toDataURL('image/jpeg', 0.82));
+  };
+  img.onerror = () => callback(dataUrl); // fallback: keep original
+  img.src = dataUrl;
+}
+
 $('photo-input').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    profile.photoB64 = ev.target.result;
-    updatePhotoUI();
-    saveState();
-    renderPreview();
+    resizePhotoBase64(ev.target.result, resized => {
+      profile.photoB64 = resized;
+      updatePhotoUI();
+      commitChange();
+    });
   };
   reader.readAsDataURL(file);
 });
@@ -2000,8 +2084,7 @@ $('btn-remove-photo').addEventListener('click', () => {
   profile.photoB64 = '';
   $('photo-input').value = '';
   updatePhotoUI();
-  saveState();
-  renderPreview();
+  commitChange();
 });
 
 function updatePhotoUI() {
@@ -2018,7 +2101,7 @@ function updatePhotoUI() {
 // ── Experiences ───────────────────────────────────────────────
 
 function addExperience(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   experiences.push({ id, company: data.company||'', role: data.role||'', startDate: data.startDate||'', endDate: data.endDate||'', current: data.current||false, bullets: data.bullets||'' });
   renderExperiences();
 }
@@ -2026,8 +2109,7 @@ function addExperience(data = {}) {
 function removeExperience(id) {
   experiences = experiences.filter(e => e.id !== id);
   renderExperiences();
-  saveState();
-  renderPreview();
+  commitChange();
 }
 
 function renderExperiences() {
@@ -2037,86 +2119,51 @@ function renderExperiences() {
     <div class="entry-item" data-id="${e.id}">
       <div class="entry-header">
         <span class="drag-handle" title="${t('drag_hint')}">⠿</span>
-        <span style="flex:1">${e.role || t('role')} ${e.company ? '@ '+e.company : ''}</span>
+        <span style="flex:1">${esc2(e.role) || t('role')} ${e.company ? '@ ' + esc2(e.company) : ''}</span>
         <button class="btn-remove-entry" onclick="removeExperience(${e.id})" title="${t('delete')}">×</button>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input exp-role" value="${esc2(e.role)}" placeholder=" " data-id="${e.id}" />
+        <input class="fl-input" data-field="role" data-id="${e.id}" value="${esc2(e.role)}" placeholder=" " />
         <label class="fl-label">${t('role')}</label>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input exp-company" value="${esc2(e.company)}" placeholder=" " data-id="${e.id}" />
+        <input class="fl-input" data-field="company" data-id="${e.id}" value="${esc2(e.company)}" placeholder=" " />
         <label class="fl-label">${t('company')}</label>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div class="fl-wrap">
-          <input type="month" class="fl-input exp-start" value="${e.startDate||''}" data-id="${e.id}" />
+          <input type="month" class="fl-input" data-field="startDate" data-id="${e.id}" value="${e.startDate||''}" />
           <label class="fl-label">${t('start_date')}</label>
         </div>
         <div class="fl-wrap">
-          <input type="month" class="fl-input exp-end" value="${e.endDate||''}" data-id="${e.id}" ${e.current ? 'disabled' : ''} />
+          <input type="month" class="fl-input" data-field="endDate" data-id="${e.id}" value="${e.endDate||''}" ${e.current ? 'disabled' : ''} />
           <label class="fl-label">${t('end_date')}</label>
         </div>
       </div>
       <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;cursor:pointer;">
-        <input type="checkbox" class="exp-current" data-id="${e.id}" ${e.current ? 'checked' : ''} />
+        <input type="checkbox" data-field="current" data-id="${e.id}" ${e.current ? 'checked' : ''} />
         ${t('current_position')}
       </label>
-      <textarea class="bullets-input exp-bullets" placeholder="${t('description')}" data-id="${e.id}">${esc2(e.bullets)}</textarea>
+      <textarea class="bullets-input" data-field="bullets" data-id="${e.id}" placeholder="${t('description')}">${esc2(e.bullets)}</textarea>
     </div>`).join('');
 
-  // Events
-  list.querySelectorAll('.exp-role').forEach(el => el.addEventListener('input', onExpChange));
-  list.querySelectorAll('.exp-company').forEach(el => el.addEventListener('input', onExpChange));
-  list.querySelectorAll('.exp-start').forEach(el => el.addEventListener('change', onExpChange));
-  list.querySelectorAll('.exp-end').forEach(el => el.addEventListener('change', onExpChange));
-  list.querySelectorAll('.exp-current').forEach(el => el.addEventListener('change', onExpCurrentChange));
-  list.querySelectorAll('.exp-bullets').forEach(el => el.addEventListener('input', onExpChange));
+  bindDelegated(list, experiences, (exp, field, el) => {
+    if (field === 'role' || field === 'company') {
+      refreshHeader(el, `${exp.role || t('role')} ${exp.company ? '@ ' + exp.company : ''}`);
+    }
+    if (field === 'current') {
+      const endInput = el.closest('.entry-item')?.querySelector('[data-field="endDate"]');
+      if (endInput) endInput.disabled = exp.current;
+    }
+  });
 }
 
-function onExpChange(e) {
-  const id = parseFloat(e.target.dataset.id);
-  const exp = experiences.find(x => x.id === id);
-  if (!exp) return;
-  const cls = e.target.classList;
-  if (cls.contains('exp-role')) exp.role = e.target.value;
-  else if (cls.contains('exp-company')) exp.company = e.target.value;
-  else if (cls.contains('exp-start')) exp.startDate = e.target.value;
-  else if (cls.contains('exp-end')) exp.endDate = e.target.value;
-  else if (cls.contains('exp-bullets')) exp.bullets = e.target.value;
-
-  // Update header label
-  const item = e.target.closest('.entry-item');
-  if (item) {
-    const header = item.querySelector('.entry-header span');
-    if (header) header.textContent = `${exp.role || t('role')} ${exp.company ? '@ '+exp.company : ''}`;
-  }
-  saveState();
-  renderPreview();
-}
-
-function onExpCurrentChange(e) {
-  const id = parseFloat(e.target.dataset.id);
-  const exp = experiences.find(x => x.id === id);
-  if (!exp) return;
-  exp.current = e.target.checked;
-  const item = e.target.closest('.entry-item');
-  if (item) {
-    const endInput = item.querySelector('.exp-end');
-    if (endInput) endInput.disabled = exp.current;
-  }
-  saveState();
-  renderPreview();
-}
-
-$('btn-add-exp').addEventListener('click', () => {
-  addExperience();
-});
+$('btn-add-exp').addEventListener('click', () => addExperience());
 
 // ── Education ─────────────────────────────────────────────────
 
 function addEducation(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   education.push({ id, school: data.school||'', degree: data.degree||'', field: data.field||'', startDate: data.startDate||'', endDate: data.endDate||'', grade: data.grade||'' });
   renderEducation();
 }
@@ -2124,8 +2171,7 @@ function addEducation(data = {}) {
 function removeEducation(id) {
   education = education.filter(e => e.id !== id);
   renderEducation();
-  saveState();
-  renderPreview();
+  commitChange();
 }
 
 function renderEducation() {
@@ -2134,62 +2180,43 @@ function renderEducation() {
   list.innerHTML = education.map(e => `
     <div class="entry-item" data-id="${e.id}">
       <div class="entry-header">
-        <span>${e.degree || t('degree')} ${e.school ? '· '+e.school : ''}</span>
+        <span class="drag-handle" title="${t('drag_hint')}">⠿</span>
+        <span>${esc2(e.degree) || t('degree')} ${e.school ? '· ' + esc2(e.school) : ''}</span>
         <button class="btn-remove-entry" onclick="removeEducation(${e.id})" title="${t('delete')}">×</button>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input edu-degree" value="${esc2(e.degree)}" placeholder=" " data-id="${e.id}" />
+        <input class="fl-input" data-field="degree" data-id="${e.id}" value="${esc2(e.degree)}" placeholder=" " />
         <label class="fl-label">${t('degree')}</label>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input edu-field" value="${esc2(e.field)}" placeholder=" " data-id="${e.id}" />
+        <input class="fl-input" data-field="field" data-id="${e.id}" value="${esc2(e.field)}" placeholder=" " />
         <label class="fl-label">${t('field')}</label>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input edu-school" value="${esc2(e.school)}" placeholder=" " data-id="${e.id}" />
+        <input class="fl-input" data-field="school" data-id="${e.id}" value="${esc2(e.school)}" placeholder=" " />
         <label class="fl-label">${t('school')}</label>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div class="fl-wrap">
-          <input type="month" class="fl-input edu-start" value="${e.startDate||''}" data-id="${e.id}" />
+          <input type="month" class="fl-input" data-field="startDate" data-id="${e.id}" value="${e.startDate||''}" />
           <label class="fl-label">${t('start_date')}</label>
         </div>
         <div class="fl-wrap">
-          <input type="month" class="fl-input edu-end" value="${e.endDate||''}" data-id="${e.id}" />
+          <input type="month" class="fl-input" data-field="endDate" data-id="${e.id}" value="${e.endDate||''}" />
           <label class="fl-label">${t('end_date')}</label>
         </div>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input edu-grade" value="${esc2(e.grade)}" placeholder=" " data-id="${e.id}" />
+        <input class="fl-input" data-field="grade" data-id="${e.id}" value="${esc2(e.grade)}" placeholder=" " />
         <label class="fl-label">${t('grade')}</label>
       </div>
     </div>`).join('');
 
-  list.querySelectorAll('.edu-degree,.edu-field,.edu-school,.edu-start,.edu-end,.edu-grade')
-    .forEach(el => el.addEventListener('input', onEduChange));
-  list.querySelectorAll('.edu-start,.edu-end')
-    .forEach(el => el.addEventListener('change', onEduChange));
-}
-
-function onEduChange(e) {
-  const id = parseFloat(e.target.dataset.id);
-  const edu = education.find(x => x.id === id);
-  if (!edu) return;
-  const cls = e.target.classList;
-  if (cls.contains('edu-degree')) edu.degree = e.target.value;
-  else if (cls.contains('edu-field')) edu.field = e.target.value;
-  else if (cls.contains('edu-school')) edu.school = e.target.value;
-  else if (cls.contains('edu-start')) edu.startDate = e.target.value;
-  else if (cls.contains('edu-end')) edu.endDate = e.target.value;
-  else if (cls.contains('edu-grade')) edu.grade = e.target.value;
-
-  const item = e.target.closest('.entry-item');
-  if (item) {
-    const header = item.querySelector('.entry-header span');
-    if (header) header.textContent = `${edu.degree || t('degree')} ${edu.school ? '· '+edu.school : ''}`;
-  }
-  saveState();
-  renderPreview();
+  bindDelegated(list, education, (edu, field, el) => {
+    if (field === 'degree' || field === 'school') {
+      refreshHeader(el, `${edu.degree || t('degree')} ${edu.school ? '· ' + edu.school : ''}`);
+    }
+  });
 }
 
 $('btn-add-edu').addEventListener('click', () => addEducation());
@@ -2197,7 +2224,7 @@ $('btn-add-edu').addEventListener('click', () => addEducation());
 // ── Skills ────────────────────────────────────────────────────
 
 function addSkillGroup(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   skills.push({ id, category: data.category||'', items: data.items||[] });
   renderSkills();
 }
@@ -2205,8 +2232,7 @@ function addSkillGroup(data = {}) {
 function removeSkillGroup(id) {
   skills = skills.filter(s => s.id !== id);
   renderSkills();
-  saveState();
-  renderPreview();
+  commitChange();
 }
 
 function addSkillTag(groupId, value) {
@@ -2215,8 +2241,7 @@ function addSkillTag(groupId, value) {
   const tags = value.split(',').map(v => v.trim()).filter(Boolean);
   tags.forEach(tag => { if (!group.items.includes(tag)) group.items.push(tag); });
   renderSkills();
-  saveState();
-  renderPreview();
+  commitChange();
 }
 
 function removeSkillTag(groupId, tag) {
@@ -2224,8 +2249,7 @@ function removeSkillTag(groupId, tag) {
   if (!group) return;
   group.items = group.items.filter(i => i !== tag);
   renderSkills();
-  saveState();
-  renderPreview();
+  commitChange();
 }
 
 function renderSkills() {
@@ -2238,7 +2262,7 @@ function renderSkills() {
         <button class="btn-remove-entry" onclick="removeSkillGroup(${g.id})" title="${t('delete')}">×</button>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input skill-cat" value="${esc2(g.category)}" placeholder=" " data-id="${g.id}" />
+        <input type="text" class="fl-input skill-cat" data-field="category" value="${esc2(g.category)}" placeholder=" " data-id="${g.id}" />
         <label class="fl-label">${t('skill_category')}</label>
       </div>
       <div class="flex flex-wrap gap-1 min-h-[32px]">
@@ -2254,16 +2278,12 @@ function renderSkills() {
       </div>
     </div>`).join('');
 
-  list.querySelectorAll('.skill-cat').forEach(el => el.addEventListener('input', e => {
-    const id = parseFloat(e.target.dataset.id);
-    const group = skills.find(s => s.id === id);
-    if (group) {
-      group.category = e.target.value;
-      const header = e.target.closest('.entry-item').querySelector('.entry-header span');
-      if (header) header.textContent = e.target.value || t('skill_category');
+  bindDelegated(list, skills, (group, field, el) => {
+    if (field === 'category') {
+      const header = el.closest('.entry-item')?.querySelector('.entry-header span:last-of-type');
+      if (header) header.textContent = group.category || t('skill_category');
     }
-    saveState(); renderPreview();
-  }));
+  });
 
   list.querySelectorAll('.skill-input').forEach(el => el.addEventListener('keydown', e => {
     if (e.key === 'Enter' || e.key === ',') {
@@ -2285,7 +2305,7 @@ $('btn-add-skill').addEventListener('click', () => addSkillGroup());
 // ── Projects ─────────────────────────────────────────────────
 
 function addProject(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   projects.push({ id, name: data.name||'', description: data.description||'', url: data.url||'', tech: data.tech||'' });
   renderProjects();
 }
@@ -2293,7 +2313,7 @@ function addProject(data = {}) {
 function removeProject(id) {
   projects = projects.filter(p => p.id !== id);
   renderProjects();
-  saveState(); renderPreview();
+  commitChange();
 }
 
 function renderProjects() {
@@ -2303,39 +2323,32 @@ function renderProjects() {
   list.innerHTML = projects.map(p => `
     <div class="entry-item" data-id="${p.id}">
       <div class="entry-header">
-        <span>${p.name || t('project_name')}</span>
+        <span class="drag-handle" title="${t('drag_hint')}">⠿</span>
+        <span>${esc2(p.name) || t('project_name')}</span>
         <button class="btn-remove-entry" onclick="removeProject(${p.id})" title="${t('delete')}">×</button>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input proj-name" value="${esc2(p.name)}" placeholder=" " data-id="${p.id}" />
+        <input class="fl-input" data-field="name" data-id="${p.id}" value="${esc2(p.name)}" placeholder=" " />
         <label class="fl-label">${t('project_name')}</label>
       </div>
       <div class="fl-wrap">
-        <textarea class="bullets-input proj-desc" placeholder="${t('project_description')}" data-id="${p.id}">${esc2(p.description)}</textarea>
+        <textarea class="bullets-input" data-field="description" data-id="${p.id}" placeholder="${t('project_description')}">${esc2(p.description)}</textarea>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div class="fl-wrap">
-          <input type="url" class="fl-input proj-url" value="${esc2(p.url)}" placeholder=" " data-id="${p.id}" />
+          <input type="url" class="fl-input" data-field="url" data-id="${p.id}" value="${esc2(p.url)}" placeholder=" " />
           <label class="fl-label">${t('project_url')}</label>
         </div>
         <div class="fl-wrap">
-          <input type="text" class="fl-input proj-tech" value="${esc2(p.tech)}" placeholder=" " data-id="${p.id}" />
+          <input class="fl-input" data-field="tech" data-id="${p.id}" value="${esc2(p.tech)}" placeholder=" " />
           <label class="fl-label">${t('project_tech')}</label>
         </div>
       </div>
     </div>`).join('');
 
-  list.querySelectorAll('.proj-name,.proj-desc,.proj-url,.proj-tech').forEach(el => el.addEventListener('input', e => {
-    const id = parseFloat(e.target.dataset.id);
-    const proj = projects.find(x => x.id === id);
-    if (!proj) return;
-    const cls = e.target.classList;
-    if (cls.contains('proj-name')) { proj.name = e.target.value; const h = e.target.closest('.entry-item')?.querySelector('.entry-header span'); if(h) h.textContent = proj.name || t('project_name'); }
-    else if (cls.contains('proj-desc')) proj.description = e.target.value;
-    else if (cls.contains('proj-url')) proj.url = e.target.value;
-    else if (cls.contains('proj-tech')) proj.tech = e.target.value;
-    saveState(); renderPreview();
-  }));
+  bindDelegated(list, projects, (proj, field, el) => {
+    if (field === 'name') refreshHeader(el, proj.name || t('project_name'));
+  });
 }
 
 $('btn-add-project')?.addEventListener('click', () => addProject());
@@ -2343,7 +2356,7 @@ $('btn-add-project')?.addEventListener('click', () => addProject());
 // ── Volunteer ────────────────────────────────────────────────
 
 function addVolunteer(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   volunteer.push({ id, org: data.org||'', role: data.role||'', startDate: data.startDate||'', endDate: data.endDate||'', description: data.description||'' });
   renderVolunteer();
 }
@@ -2351,7 +2364,7 @@ function addVolunteer(data = {}) {
 function removeVolunteer(id) {
   volunteer = volunteer.filter(v => v.id !== id);
   renderVolunteer();
-  saveState(); renderPreview();
+  commitChange();
 }
 
 function renderVolunteer() {
@@ -2361,43 +2374,36 @@ function renderVolunteer() {
   list.innerHTML = volunteer.map(v => `
     <div class="entry-item" data-id="${v.id}">
       <div class="entry-header">
-        <span>${v.role || t('volunteer_role')} ${v.org ? '@ '+v.org : ''}</span>
+        <span class="drag-handle" title="${t('drag_hint')}">⠿</span>
+        <span>${esc2(v.role) || t('volunteer_role')} ${v.org ? '@ ' + esc2(v.org) : ''}</span>
         <button class="btn-remove-entry" onclick="removeVolunteer(${v.id})" title="${t('delete')}">×</button>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input vol-role" value="${esc2(v.role)}" placeholder=" " data-id="${v.id}" />
+        <input class="fl-input" data-field="role" data-id="${v.id}" value="${esc2(v.role)}" placeholder=" " />
         <label class="fl-label">${t('volunteer_role')}</label>
       </div>
       <div class="fl-wrap">
-        <input type="text" class="fl-input vol-org" value="${esc2(v.org)}" placeholder=" " data-id="${v.id}" />
+        <input class="fl-input" data-field="org" data-id="${v.id}" value="${esc2(v.org)}" placeholder=" " />
         <label class="fl-label">${t('volunteer_org')}</label>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div class="fl-wrap">
-          <input type="month" class="fl-input vol-start" value="${v.startDate||''}" data-id="${v.id}" />
+          <input type="month" class="fl-input" data-field="startDate" data-id="${v.id}" value="${v.startDate||''}" />
           <label class="fl-label">${t('start_date')}</label>
         </div>
         <div class="fl-wrap">
-          <input type="month" class="fl-input vol-end" value="${v.endDate||''}" data-id="${v.id}" />
+          <input type="month" class="fl-input" data-field="endDate" data-id="${v.id}" value="${v.endDate||''}" />
           <label class="fl-label">${t('end_date')}</label>
         </div>
       </div>
-      <textarea class="bullets-input vol-desc" placeholder="${t('description')}" data-id="${v.id}">${esc2(v.description)}</textarea>
+      <textarea class="bullets-input" data-field="description" data-id="${v.id}" placeholder="${t('description')}">${esc2(v.description)}</textarea>
     </div>`).join('');
 
-  list.querySelectorAll('.vol-role,.vol-org,.vol-start,.vol-end,.vol-desc').forEach(el => el.addEventListener('input', e => {
-    const id = parseFloat(e.target.dataset.id);
-    const vol = volunteer.find(x => x.id === id);
-    if (!vol) return;
-    const cls = e.target.classList;
-    if (cls.contains('vol-role')) { vol.role = e.target.value; const h = e.target.closest('.entry-item')?.querySelector('.entry-header span'); if(h) h.textContent = `${vol.role || t('volunteer_role')} ${vol.org ? '@ '+vol.org : ''}`; }
-    else if (cls.contains('vol-org')) { vol.org = e.target.value; const h = e.target.closest('.entry-item')?.querySelector('.entry-header span'); if(h) h.textContent = `${vol.role || t('volunteer_role')} ${vol.org ? '@ '+vol.org : ''}`; }
-    else if (cls.contains('vol-start')) vol.startDate = e.target.value;
-    else if (cls.contains('vol-end')) vol.endDate = e.target.value;
-    else if (cls.contains('vol-desc')) vol.description = e.target.value;
-    saveState(); renderPreview();
-  }));
-  list.querySelectorAll('.vol-start,.vol-end').forEach(el => el.addEventListener('change', el.dispatchEvent.bind(el, new Event('input'))));
+  bindDelegated(list, volunteer, (vol, field, el) => {
+    if (field === 'role' || field === 'org') {
+      refreshHeader(el, `${vol.role || t('volunteer_role')} ${vol.org ? '@ ' + vol.org : ''}`);
+    }
+  });
 }
 
 $('btn-add-volunteer')?.addEventListener('click', () => addVolunteer());
@@ -2405,7 +2411,7 @@ $('btn-add-volunteer')?.addEventListener('click', () => addVolunteer());
 // ── Custom Sections ──────────────────────────────────────────
 
 function addCustomSection(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   customSections.push({ id, title: data.title||'', entries: data.entries||[] });
   renderCustomSections();
 }
@@ -2413,16 +2419,16 @@ function addCustomSection(data = {}) {
 function removeCustomSection(id) {
   customSections = customSections.filter(s => s.id !== id);
   renderCustomSections();
-  saveState(); renderPreview();
+  commitChange();
 }
 
 function addCustomEntry(sectionId, data = {}) {
   const section = customSections.find(s => s.id === sectionId);
   if (!section) return;
-  const id = Date.now() + Math.random();
+  const id = genId();
   section.entries.push({ id, title: data.title||'', subtitle: data.subtitle||'', date: data.date||'', description: data.description||'' });
   renderCustomSections();
-  saveState(); renderPreview();
+  commitChange();
 }
 
 function removeCustomEntry(sectionId, entryId) {
@@ -2430,7 +2436,7 @@ function removeCustomEntry(sectionId, entryId) {
   if (!section) return;
   section.entries = section.entries.filter(e => e.id !== entryId);
   renderCustomSections();
-  saveState(); renderPreview();
+  commitChange();
 }
 
 function renderCustomSections() {
@@ -2488,7 +2494,7 @@ function renderCustomSections() {
       const h = e.target.closest('.entry-item')?.querySelector('.entry-header span');
       if (h) h.textContent = sec.title || t('custom_section');
     }
-    saveState(); renderPreview();
+    commitChange();
   }));
 
   // Entry field changes
@@ -2504,7 +2510,7 @@ function renderCustomSections() {
     else if (cls.contains('ce-subtitle')) en.subtitle = e.target.value;
     else if (cls.contains('ce-date')) en.date = e.target.value;
     else if (cls.contains('ce-desc')) en.description = e.target.value;
-    saveState(); renderPreview();
+    commitChange();
   }));
 }
 
@@ -2513,7 +2519,7 @@ $('btn-add-custom-section')?.addEventListener('click', () => addCustomSection())
 // ── Extras: Certifications ────────────────────────────────────
 
 function addCertification(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   extras.certifications.push({ id, name: data.name||'', issuer: data.issuer||'', date: data.date||'' });
   renderCertifications();
 }
@@ -2521,7 +2527,7 @@ function addCertification(data = {}) {
 function removeCertification(id) {
   extras.certifications = extras.certifications.filter(c => c.id !== id);
   renderCertifications();
-  saveState(); renderPreview();
+  commitChange();
 }
 
 function renderCertifications() {
@@ -2532,15 +2538,15 @@ function renderCertifications() {
       <div style="display:flex;gap:0.5rem;align-items:flex-start;">
         <div style="flex:1;display:grid;grid-template-columns:1fr 1fr auto;gap:0.5rem;">
           <div class="fl-wrap">
-            <input type="text" class="fl-input cert-name" value="${esc2(c.name)}" placeholder=" " data-id="${c.id}" />
+            <input class="fl-input" data-field="name" data-id="${c.id}" value="${esc2(c.name)}" placeholder=" " />
             <label class="fl-label" style="font-size:0.7rem;">${t('cert_name')}</label>
           </div>
           <div class="fl-wrap">
-            <input type="text" class="fl-input cert-issuer" value="${esc2(c.issuer)}" placeholder=" " data-id="${c.id}" />
+            <input class="fl-input" data-field="issuer" data-id="${c.id}" value="${esc2(c.issuer)}" placeholder=" " />
             <label class="fl-label" style="font-size:0.7rem;">${t('cert_issuer')}</label>
           </div>
           <div class="fl-wrap" style="width:110px;">
-            <input type="month" class="fl-input cert-date" value="${c.date||''}" data-id="${c.id}" />
+            <input type="month" class="fl-input" data-field="date" data-id="${c.id}" value="${c.date||''}" />
             <label class="fl-label" style="font-size:0.7rem;">${t('cert_date')}</label>
           </div>
         </div>
@@ -2548,21 +2554,7 @@ function renderCertifications() {
       </div>
     </div>`).join('');
 
-  list.querySelectorAll('.cert-name,.cert-issuer,.cert-date').forEach(el => el.addEventListener('input', e => {
-    const id = parseFloat(e.target.dataset.id);
-    const cert = extras.certifications.find(c => c.id === id);
-    if (!cert) return;
-    const cls = e.target.classList;
-    if (cls.contains('cert-name')) cert.name = e.target.value;
-    else if (cls.contains('cert-issuer')) cert.issuer = e.target.value;
-    else if (cls.contains('cert-date')) cert.date = e.target.value;
-    saveState(); renderPreview();
-  }));
-  list.querySelectorAll('.cert-date').forEach(el => el.addEventListener('change', e => {
-    const id = parseFloat(e.target.dataset.id);
-    const cert = extras.certifications.find(c => c.id === id);
-    if (cert) { cert.date = e.target.value; saveState(); renderPreview(); }
-  }));
+  bindDelegated(list, extras.certifications);
 }
 
 $('btn-add-cert').addEventListener('click', () => addCertification());
@@ -2570,7 +2562,7 @@ $('btn-add-cert').addEventListener('click', () => addCertification());
 // ── Extras: Languages ─────────────────────────────────────────
 
 function addLangItem(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   extras.languages.push({ id, name: data.name||'', level: data.level||'' });
   renderLangItems();
 }
@@ -2578,7 +2570,7 @@ function addLangItem(data = {}) {
 function removeLangItem(id) {
   extras.languages = extras.languages.filter(l => l.id !== id);
   renderLangItems();
-  saveState(); renderPreview();
+  commitChange();
 }
 
 function renderLangItems() {
@@ -2588,25 +2580,18 @@ function renderLangItems() {
     <div class="entry-item" style="padding:0.625rem;" data-id="${l.id}">
       <div style="display:flex;gap:0.5rem;align-items:center;">
         <div class="fl-wrap" style="flex:1;">
-          <input type="text" class="fl-input lang-name" value="${esc2(l.name)}" placeholder=" " data-id="${l.id}" />
+          <input class="fl-input" data-field="name" data-id="${l.id}" value="${esc2(l.name)}" placeholder=" " />
           <label class="fl-label" style="font-size:0.7rem;">${t('lang_name')}</label>
         </div>
         <div class="fl-wrap" style="flex:1;">
-          <input type="text" class="fl-input lang-level" value="${esc2(l.level)}" placeholder=" " data-id="${l.id}" />
+          <input class="fl-input" data-field="level" data-id="${l.id}" value="${esc2(l.level)}" placeholder=" " />
           <label class="fl-label" style="font-size:0.7rem;">${t('lang_level')}</label>
         </div>
         <button class="btn-remove-entry" onclick="removeLangItem(${l.id})">×</button>
       </div>
     </div>`).join('');
 
-  list.querySelectorAll('.lang-name,.lang-level').forEach(el => el.addEventListener('input', e => {
-    const id = parseFloat(e.target.dataset.id);
-    const item = extras.languages.find(x => x.id === id);
-    if (!item) return;
-    if (e.target.classList.contains('lang-name')) item.name = e.target.value;
-    else item.level = e.target.value;
-    saveState(); renderPreview();
-  }));
+  bindDelegated(list, extras.languages);
 }
 
 $('btn-add-lang-item').addEventListener('click', () => addLangItem());
@@ -2614,13 +2599,13 @@ $('btn-add-lang-item').addEventListener('click', () => addLangItem());
 // Interests
 $('p-interests').addEventListener('input', () => {
   extras.interests = $('p-interests').value;
-  saveState(); renderPreview();
+  commitChange();
 });
 
 // ── Publications ──────────────────────────────────────────────
 
 function addPublication(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   publications.push({ id, title: data.title||'', authors: data.authors||'', venue: data.venue||'', date: data.date||'', url: data.url||'' });
   renderPublications();
 }
@@ -2628,7 +2613,7 @@ function addPublication(data = {}) {
 function removePublication(id) {
   publications = publications.filter(p => p.id !== id);
   renderPublications();
-  saveState(); renderPreview();
+  commitChange();
 }
 
 function renderPublications() {
@@ -2638,47 +2623,39 @@ function renderPublications() {
   list.innerHTML = publications.map(p => `
     <div class="entry-item" data-id="${p.id}">
       <div class="entry-header">
+        <span class="drag-handle" title="${t('drag_hint')}">⠿</span>
         <span>${esc2(p.title) || t('pub_title')}</span>
         <button class="btn-remove-entry" onclick="removePublication(${p.id})">×</button>
       </div>
       <div class="grid grid-cols-1 gap-2">
         <div class="fl-wrap">
-          <input type="text" class="fl-input pub-title" value="${esc2(p.title)}" placeholder=" " data-id="${p.id}" />
+          <input class="fl-input" data-field="title" data-id="${p.id}" value="${esc2(p.title)}" placeholder=" " />
           <label class="fl-label">${t('pub_title')}</label>
         </div>
         <div class="fl-wrap">
-          <input type="text" class="fl-input pub-authors" value="${esc2(p.authors)}" placeholder=" " data-id="${p.id}" />
+          <input class="fl-input" data-field="authors" data-id="${p.id}" value="${esc2(p.authors)}" placeholder=" " />
           <label class="fl-label">${t('pub_authors')}</label>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div class="fl-wrap">
-            <input type="text" class="fl-input pub-venue" value="${esc2(p.venue)}" placeholder=" " data-id="${p.id}" />
+            <input class="fl-input" data-field="venue" data-id="${p.id}" value="${esc2(p.venue)}" placeholder=" " />
             <label class="fl-label">${t('pub_venue')}</label>
           </div>
           <div class="fl-wrap">
-            <input type="month" class="fl-input pub-date" value="${p.date||''}" data-id="${p.id}" />
+            <input type="month" class="fl-input" data-field="date" data-id="${p.id}" value="${p.date||''}" />
             <label class="fl-label">${t('pub_date')}</label>
           </div>
         </div>
         <div class="fl-wrap">
-          <input type="url" class="fl-input pub-url" value="${esc2(p.url)}" placeholder=" " data-id="${p.id}" />
+          <input type="url" class="fl-input" data-field="url" data-id="${p.id}" value="${esc2(p.url)}" placeholder=" " />
           <label class="fl-label">${t('pub_url')}</label>
         </div>
       </div>
     </div>`).join('');
 
-  list.querySelectorAll('.pub-title,.pub-authors,.pub-venue,.pub-date,.pub-url').forEach(el => el.addEventListener('input', e => {
-    const id = parseFloat(e.target.dataset.id);
-    const pub = publications.find(p => p.id === id);
-    if (!pub) return;
-    const cls = e.target.classList;
-    if (cls.contains('pub-title')) pub.title = e.target.value;
-    else if (cls.contains('pub-authors')) pub.authors = e.target.value;
-    else if (cls.contains('pub-venue')) pub.venue = e.target.value;
-    else if (cls.contains('pub-date')) pub.date = e.target.value;
-    else if (cls.contains('pub-url')) pub.url = e.target.value;
-    saveState(); renderPreview();
-  }));
+  bindDelegated(list, publications, (pub, field, el) => {
+    if (field === 'title') refreshHeader(el, pub.title || t('pub_title'));
+  });
 }
 
 $('btn-add-pub').addEventListener('click', () => addPublication());
@@ -2686,7 +2663,7 @@ $('btn-add-pub').addEventListener('click', () => addPublication());
 // ── References ────────────────────────────────────────────────
 
 function addReference(data = {}) {
-  const id = Date.now() + Math.random();
+  const id = genId();
   references.push({ id, name: data.name||'', title: data.title||'', company: data.company||'', email: data.email||'', phone: data.phone||'' });
   renderReferences();
 }
@@ -2694,7 +2671,7 @@ function addReference(data = {}) {
 function removeReference(id) {
   references = references.filter(r => r.id !== id);
   renderReferences();
-  saveState(); renderPreview();
+  commitChange();
 }
 
 function renderReferences() {
@@ -2704,52 +2681,44 @@ function renderReferences() {
   list.innerHTML = references.map(r => `
     <div class="entry-item" data-id="${r.id}">
       <div class="entry-header">
+        <span class="drag-handle" title="${t('drag_hint')}">⠿</span>
         <span>${esc2(r.name) || t('ref_name')}</span>
         <button class="btn-remove-entry" onclick="removeReference(${r.id})">×</button>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div class="fl-wrap">
-          <input type="text" class="fl-input ref-name" value="${esc2(r.name)}" placeholder=" " data-id="${r.id}" />
+          <input class="fl-input" data-field="name" data-id="${r.id}" value="${esc2(r.name)}" placeholder=" " />
           <label class="fl-label">${t('ref_name')}</label>
         </div>
         <div class="fl-wrap">
-          <input type="text" class="fl-input ref-title-input" value="${esc2(r.title)}" placeholder=" " data-id="${r.id}" />
+          <input class="fl-input" data-field="title" data-id="${r.id}" value="${esc2(r.title)}" placeholder=" " />
           <label class="fl-label">${t('ref_title')}</label>
         </div>
         <div class="fl-wrap">
-          <input type="text" class="fl-input ref-company" value="${esc2(r.company)}" placeholder=" " data-id="${r.id}" />
+          <input class="fl-input" data-field="company" data-id="${r.id}" value="${esc2(r.company)}" placeholder=" " />
           <label class="fl-label">${t('ref_company')}</label>
         </div>
         <div class="fl-wrap">
-          <input type="email" class="fl-input ref-email" value="${esc2(r.email)}" placeholder=" " data-id="${r.id}" />
+          <input type="email" class="fl-input" data-field="email" data-id="${r.id}" value="${esc2(r.email)}" placeholder=" " />
           <label class="fl-label">${t('ref_email')}</label>
         </div>
         <div class="fl-wrap">
-          <input type="tel" class="fl-input ref-phone" value="${esc2(r.phone)}" placeholder=" " data-id="${r.id}" />
+          <input type="tel" class="fl-input" data-field="phone" data-id="${r.id}" value="${esc2(r.phone)}" placeholder=" " />
           <label class="fl-label">${t('ref_phone')}</label>
         </div>
       </div>
     </div>`).join('');
 
-  list.querySelectorAll('.ref-name,.ref-title-input,.ref-company,.ref-email,.ref-phone').forEach(el => el.addEventListener('input', e => {
-    const id = parseFloat(e.target.dataset.id);
-    const ref = references.find(r => r.id === id);
-    if (!ref) return;
-    const cls = e.target.classList;
-    if (cls.contains('ref-name')) ref.name = e.target.value;
-    else if (cls.contains('ref-title-input')) ref.title = e.target.value;
-    else if (cls.contains('ref-company')) ref.company = e.target.value;
-    else if (cls.contains('ref-email')) ref.email = e.target.value;
-    else if (cls.contains('ref-phone')) ref.phone = e.target.value;
-    saveState(); renderPreview();
-  }));
+  bindDelegated(list, references, (ref, field, el) => {
+    if (field === 'name') refreshHeader(el, ref.name || t('ref_name'));
+  });
 }
 
 $('btn-add-ref').addEventListener('click', () => addReference());
 
 $('tog-references').addEventListener('change', () => {
   showReferencesToggle = $('tog-references').checked;
-  saveState(); renderPreview();
+  commitChange();
 });
 
 // ── Design options ────────────────────────────────────────────
@@ -2759,7 +2728,7 @@ document.querySelectorAll('.tpl-pill').forEach(btn => {
     document.querySelectorAll('.tpl-pill').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     template = btn.dataset.tpl;
-    saveState(); renderPreview();
+    commitChange();
   });
 });
 
@@ -2769,45 +2738,66 @@ document.querySelectorAll('.color-dot').forEach(btn => {
     btn.classList.add('active');
     $('custom-color').value = btn.dataset.color;
     setAccent(btn.dataset.color);
-    saveState(); renderPreview();
+    commitChange();
   });
 });
 
 $('custom-color').addEventListener('input', e => {
   document.querySelectorAll('.color-dot').forEach(b => b.classList.remove('active'));
   setAccent(e.target.value);
-  saveState(); renderPreview();
+  commitChange();
 });
+
+// ── Lazy font loader ──────────────────────────────────────────
+// Only Inter is loaded at startup. Other fonts are injected on demand.
+const FONT_URLS = {
+  'Roboto':          'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
+  'Lato':            'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap',
+  'Playfair Display':'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap',
+  'Poppins':         'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap',
+  'Noto Sans Arabic':'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap',
+};
+const _loadedFonts = new Set(['Inter']);
+
+function ensureFontLoaded(fontName) {
+  if (_loadedFonts.has(fontName) || !FONT_URLS[fontName]) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = FONT_URLS[fontName];
+  document.head.appendChild(link);
+  _loadedFonts.add(fontName);
+}
 
 document.querySelectorAll('.font-pill').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.font-pill').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     cvFont = btn.dataset.font;
-    saveState(); renderPreview();
+    ensureFontLoaded(cvFont);
+    commitChange();
   });
 });
 
 $('tog-photo').addEventListener('change', () => {
   showPhoto = $('tog-photo').checked;
-  saveState(); renderPreview();
+  commitChange();
 });
 
 // ── Sliders ──────────────────────────────────────────────────
 $('slider-font-size').addEventListener('input', e => {
   cvFontSize = parseInt(e.target.value, 10) / 100;
   $('val-font-size').textContent = e.target.value + '%';
-  saveState(); renderPreview();
+  commitChange();
 });
 $('slider-spacing').addEventListener('input', e => {
   cvSpacing = parseInt(e.target.value, 10) / 100;
   $('val-spacing').textContent = e.target.value + '%';
-  saveState(); renderPreview();
+  commitChange();
 });
 $('slider-sidebar-width').addEventListener('input', e => {
   cvSidebarWidth = parseInt(e.target.value, 10);
   $('val-sidebar-width').textContent = e.target.value + 'px';
-  saveState(); renderPreview();
+  commitChange();
 });
 
 // ── Section toggles ──────────────────────────────────────────
@@ -2844,7 +2834,7 @@ function renderSectionToggles() {
     cb.addEventListener('change', () => {
       if (cb.checked) delete hiddenSections[cb.dataset.sectionKey];
       else hiddenSections[cb.dataset.sectionKey] = true;
-      saveState(); renderPreview();
+      commitChange();
     });
   });
 }
@@ -2860,26 +2850,33 @@ function renderPreview() {
 
 // Post-process template HTML to apply customisation sliders
 function postProcessTemplate(html) {
+  // Fast path: nothing to transform when all sliders are at defaults
+  const needsFontScale    = cvFontSize !== 1;
+  const needsSpacingScale = cvSpacing !== 1;
+  const needsSidebarScale = cvSidebarWidth !== 220;
+  const needsRTL          = RTL_LANGS.includes(lang);
+  if (!needsFontScale && !needsSpacingScale && !needsSidebarScale && !needsRTL) return html;
+
   let out = html;
   // Scale font sizes
-  if (cvFontSize !== 1) {
+  if (needsFontScale) {
     out = out.replace(/font-size:\s*([\d.]+)(rem|em|px)/g, (m, num, unit) => {
       return `font-size:${(parseFloat(num) * cvFontSize).toFixed(3)}${unit}`;
     });
   }
   // Scale spacing (margin, padding, gap)
-  if (cvSpacing !== 1) {
+  if (needsSpacingScale) {
     out = out.replace(/(margin(?:-top|-bottom|-left|-right)?|padding(?:-top|-bottom|-left|-right)?|gap|row-gap|column-gap):\s*([\d.]+)(rem|em|px)/g, (m, prop, num, unit) => {
       return `${prop}:${(parseFloat(num) * cvSpacing).toFixed(3)}${unit}`;
     });
   }
   // Sidebar width - replace common sidebar width patterns
-  if (cvSidebarWidth !== 220) {
+  if (needsSidebarScale) {
     out = out.replace(/width:220px/g, `width:${cvSidebarWidth}px`);
     out = out.replace(/width:235px/g, `width:${cvSidebarWidth}px`);
   }
   // RTL: flip direction on the root flex container and text alignment
-  if (RTL_LANGS.includes(lang)) {
+  if (needsRTL) {
     // Flip sidebar layout (flex-direction: row → row-reverse)
     out = out.replace(/display:\s*flex(?=[^"]*flex-shrink:0)/g, 'display:flex;flex-direction:row-reverse');
     // Add direction:rtl and text-align:right to the outermost container
@@ -3161,15 +3158,28 @@ async function downloadPDF() {
 
 const HISTORY_KEY = 'iloveresume_history';
 
+function exportStateForHistory() {
+  // Strip photo from history entries — a photo can be 50-200KB,
+  // and 20 entries × 150KB = 3MB which exhausts localStorage quota.
+  // The photo remains in the active CV slot.
+  const s = JSON.parse(exportState());
+  if (s.profile) s.profile.photoB64 = '';
+  return JSON.stringify(s);
+}
+
 function saveToHistory() {
   const history = getHistory();
+  const list = getCVList();
+  const activeCv = list.cvs.find(c => c.id === list.activeCvId);
   const entry = {
     id: Date.now(),
     date: new Date().toISOString(),
     name: profile.name || t('unnamed'),
     title: profile.title || '',
     template,
-    state: exportState(),
+    cvId: list.activeCvId || null,
+    cvName: activeCv?.name || null,
+    state: exportStateForHistory(), // photo stripped
   };
   history.unshift(entry);
   const trimmed = history.slice(0, 20);
@@ -3190,35 +3200,55 @@ function renderHistoryModal() {
     return;
   }
   empty.classList.add('hidden');
-  list.innerHTML = history.map(item => `
+  list.innerHTML = history.map(item => {
+    const cvBadge = item.cvName
+      ? `<span class="history-cv-badge">${esc2(item.cvName)}</span>`
+      : '';
+    return `
     <div class="history-item">
       <div>
-        <div class="font-semibold text-sm">${esc2(item.name)}</div>
+        <div class="font-semibold text-sm">${esc2(item.name)} ${cvBadge}</div>
         <div class="text-xs text-gray-500">${esc2(item.title)} · ${new Date(item.date).toLocaleDateString(lang)} · ${item.template}</div>
       </div>
       <div class="history-item-actions">
         <button onclick="loadFromHistory(${item.id})" title="${t('load')}">${t('load')}</button>
-        <button onclick="duplicateFromHistory(${item.id})" title="${t('duplicate')}">${t('duplicate')}</button>
         <button class="btn-del" onclick="deleteFromHistory(${item.id})" title="${t('delete')}">${t('delete')}</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function loadFromHistory(id) {
   const history = getHistory();
   const entry = history.find(h => h.id === id);
   if (!entry) return;
+
+  // With multi-CV: always load into a NEW cv slot to avoid silently
+  // overwriting the current CV. The old single-CV behavior was a data-loss risk.
+  clearTimeout(_saveTimer);
+  _doSaveState(); // flush current immediately
+
+  const list = getCVList();
+  const newId = genCvId();
+  const baseName = (entry.cvName || entry.name || t('unnamed'));
+  const date = new Date(entry.date).toLocaleDateString(lang);
+  list.cvs.push({ id: newId, name: `${baseName} (${date})`, createdAt: Date.now(), updatedAt: Date.now() });
+  list.activeCvId = newId;
+  saveCVList(list);
   importState(entry.state);
+  localStorage.setItem(CV_PREFIX + newId, entry.state);
+  renderAll();
+  syncDesignUI();
+  renderAllTranslations();
+  renderPreview();
+  renderCVSelect();
   closeModal('modal-history');
   showToast(t('load') + ' ✓');
 }
 
 function duplicateFromHistory(id) {
-  const history = getHistory();
-  const entry = history.find(h => h.id === id);
-  if (!entry) return;
-  importState(entry.state);
-  closeModal('modal-history');
+  // Same as load — creates a new CV slot with the historical state
+  loadFromHistory(id);
 }
 
 function deleteFromHistory(id) {
@@ -3230,22 +3260,181 @@ function deleteFromHistory(id) {
 
 // ── State persistence ─────────────────────────────────────────
 
-const STATE_KEY = 'iloveresume_state';
+const STATE_KEY    = 'iloveresume_state';   // legacy single-CV key (kept for migration)
+const CVLIST_KEY   = 'iloveresume_cvlist';  // multi-CV index
+const CV_PREFIX    = 'iloveresume_cv_';     // per-CV state key prefix
 
 function exportState() {
   return JSON.stringify({ profile, experiences, education, skills, projects, volunteer, customSections, publications, references, showReferencesToggle, extras, template, accentColor, cvFont, showPhoto, cvFontSize, cvSpacing, cvSidebarWidth, hiddenSections, lang });
 }
 
+// ── saveState — debounced (400ms), writes to active CV slot ───
+
+let _saveTimer = null;
 let _saveIndicatorTimer = null;
+
 function saveState() {
-  localStorage.setItem(STATE_KEY, exportState());
-  // Show autosave indicator
+  // Show indicator immediately for snappy feel
   const el = $('save-indicator');
-  if (el) {
-    el.classList.add('visible');
-    clearTimeout(_saveIndicatorTimer);
-    _saveIndicatorTimer = setTimeout(() => el.classList.remove('visible'), 2000);
+  if (el) el.classList.add('visible');
+  // Debounce the actual write
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(_doSaveState, 400);
+}
+
+function _doSaveState() {
+  const json = exportState();
+  const list = getCVList();
+  if (list.activeCvId) {
+    localStorage.setItem(CV_PREFIX + list.activeCvId, json);
+    // Update timestamp in index
+    const cv = list.cvs.find(c => c.id === list.activeCvId);
+    if (cv) { cv.updatedAt = Date.now(); saveCVList(list); }
+  } else {
+    localStorage.setItem(STATE_KEY, json); // fallback
   }
+  clearTimeout(_saveIndicatorTimer);
+  _saveIndicatorTimer = setTimeout(() => {
+    const el = $('save-indicator');
+    if (el) el.classList.remove('visible');
+  }, 2000);
+}
+
+// ── Multi-CV management ───────────────────────────────────────
+
+function genCvId() {
+  return 'cv-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+function getCVList() {
+  try {
+    const raw = localStorage.getItem(CVLIST_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (_) {}
+  return { activeCvId: null, cvs: [] };
+}
+
+function saveCVList(data) {
+  localStorage.setItem(CVLIST_KEY, JSON.stringify(data));
+}
+
+function initMultiCV() {
+  let list = getCVList();
+  if (!list.cvs.length) {
+    // First boot — migrate old single-CV if it exists
+    const firstId = genCvId();
+    const oldState = localStorage.getItem(STATE_KEY);
+    list = {
+      activeCvId: firstId,
+      cvs: [{ id: firstId, name: 'Mon CV', createdAt: Date.now(), updatedAt: Date.now() }],
+    };
+    if (oldState) localStorage.setItem(CV_PREFIX + firstId, oldState);
+    saveCVList(list);
+  }
+  // Load active CV state
+  const saved = localStorage.getItem(CV_PREFIX + list.activeCvId);
+  if (saved) importState(saved);
+  renderCVSelect();
+}
+
+function renderCVSelect() {
+  const list = getCVList();
+  const sel = $('cv-select');
+  if (!sel) return;
+  sel.innerHTML = list.cvs.map(cv =>
+    `<option value="${esc2(cv.id)}" ${cv.id === list.activeCvId ? 'selected' : ''}>${esc2(cv.name)}</option>`
+  ).join('');
+}
+
+function switchCV(id) {
+  clearTimeout(_saveTimer);
+  _doSaveState(); // flush current immediately
+  const list = getCVList();
+  if (!list.cvs.find(c => c.id === id)) return;
+  list.activeCvId = id;
+  saveCVList(list);
+  const saved = localStorage.getItem(CV_PREFIX + id);
+  if (saved) {
+    importState(saved);
+  } else {
+    resetState();
+  }
+  renderAll();
+  syncDesignUI();
+  renderAllTranslations();
+  renderPreview();
+  renderCVSelect();
+}
+
+function newCV() {
+  clearTimeout(_saveTimer);
+  _doSaveState();
+  const list = getCVList();
+  const id = genCvId();
+  const name = `CV ${list.cvs.length + 1}`;
+  list.cvs.push({ id, name, createdAt: Date.now(), updatedAt: Date.now() });
+  list.activeCvId = id;
+  saveCVList(list);
+  resetState();
+  renderAll();
+  syncDesignUI();
+  renderPreview();
+  renderCVSelect();
+  showToast('✓ Nouveau CV créé');
+}
+
+function duplicateCurrentCV() {
+  clearTimeout(_saveTimer);
+  _doSaveState();
+  const list = getCVList();
+  const src = list.cvs.find(c => c.id === list.activeCvId);
+  const id = genCvId();
+  const name = src ? src.name + ' (copie)' : `CV ${list.cvs.length + 1}`;
+  const stateJson = exportState();
+  list.cvs.push({ id, name, createdAt: Date.now(), updatedAt: Date.now() });
+  list.activeCvId = id;
+  localStorage.setItem(CV_PREFIX + id, stateJson);
+  saveCVList(list);
+  renderCVSelect();
+  showToast('✓ CV dupliqué');
+}
+
+function deleteCurrentCV() {
+  const list = getCVList();
+  if (list.cvs.length <= 1) { showToast('Impossible de supprimer le seul CV'); return; }
+  if (!confirm(`Supprimer "${list.cvs.find(c=>c.id===list.activeCvId)?.name || 'ce CV'}" ?`)) return;
+  localStorage.removeItem(CV_PREFIX + list.activeCvId);
+  list.cvs = list.cvs.filter(c => c.id !== list.activeCvId);
+  list.activeCvId = list.cvs[0].id;
+  saveCVList(list);
+  const saved = localStorage.getItem(CV_PREFIX + list.activeCvId);
+  if (saved) importState(saved); else resetState();
+  renderAll();
+  syncDesignUI();
+  renderPreview();
+  renderCVSelect();
+  showToast('CV supprimé');
+}
+
+function renameCurrentCV(name) {
+  const list = getCVList();
+  const cv = list.cvs.find(c => c.id === list.activeCvId);
+  if (cv && name.trim()) { cv.name = name.trim(); saveCVList(list); renderCVSelect(); }
+}
+
+// ── Reset state to blank CV defaults ─────────────────────────
+
+function resetState() {
+  profile = { name:'', title:'', summary:'', email:'', phone:'', city:'', linkedin:'', github:'', website:'', photoB64:'' };
+  experiences = []; education = []; skills = []; projects = [];
+  volunteer = []; customSections = []; publications = []; references = [];
+  showReferencesToggle = true;
+  extras = { certifications: [], languages: [], interests: '' };
+  template = 'modern'; accentColor = '#4f6ef7'; cvFont = 'Inter';
+  showPhoto = true; cvFontSize = 1; cvSpacing = 1; cvSidebarWidth = 220;
+  hiddenSections = {};
+  setAccent(accentColor);
+  populateProfile();
 }
 
 function importState(json) {
@@ -3264,7 +3453,9 @@ function importState(json) {
     if (s.extras)         extras = s.extras;
     if (s.template)     template = s.template;
     if (s.accentColor)  { accentColor = s.accentColor; setAccent(accentColor); }
-    if (s.cvFont)       cvFont = s.cvFont;
+    // Whitelist: only allow fonts that are actually loaded/loadable
+    const ALLOWED_FONTS = ['Inter','Roboto','Lato','Playfair Display','Poppins','Noto Sans Arabic'];
+    if (s.cvFont && ALLOWED_FONTS.includes(s.cvFont)) cvFont = s.cvFont;
     if (typeof s.showPhoto === 'boolean') showPhoto = s.showPhoto;
     if (typeof s.cvFontSize === 'number') cvFontSize = s.cvFontSize;
     if (typeof s.cvSpacing === 'number') cvSpacing = s.cvSpacing;
@@ -3321,7 +3512,10 @@ async function buildShareUrl() {
   await loadScript(LIBS.pako);
   const json = exportState();
   const compressed = pako.deflate(new TextEncoder().encode(json));
-  const b64 = btoa(String.fromCharCode(...compressed));
+  // Chunked encoding to avoid "Maximum call stack size exceeded" on large CVs
+  let binary = '';
+  for (let i = 0; i < compressed.length; i++) binary += String.fromCharCode(compressed[i]);
+  const b64 = btoa(binary);
   const url = `${location.origin}${location.pathname}?cv=${encodeURIComponent(b64)}`;
   return url;
 }
@@ -3385,6 +3579,23 @@ document.addEventListener('keydown', e => {
 });
 
 // ── Button bindings ───────────────────────────────────────────
+
+// ── CV Switcher bindings ──────────────────────────────────────
+
+$('cv-select').addEventListener('change', e => switchCV(e.target.value));
+
+$('btn-new-cv').addEventListener('click', () => newCV());
+
+$('btn-dup-cv').addEventListener('click', () => duplicateCurrentCV());
+
+$('btn-rename-cv').addEventListener('click', () => {
+  const list = getCVList();
+  const current = list.cvs.find(c => c.id === list.activeCvId);
+  const name = prompt('Nouveau nom du CV :', current?.name || '');
+  if (name !== null) renameCurrentCV(name);
+});
+
+$('btn-delete-cv').addEventListener('click', () => deleteCurrentCV());
 
 $('btn-lang').addEventListener('click', () => {
   renderLangModal();
@@ -3457,7 +3668,7 @@ $('json-file-input').addEventListener('change', e => {
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey) {
     if (e.key === 'd') { e.preventDefault(); downloadPDF(); }
-    if (e.key === 's') { e.preventDefault(); saveState(); showToast('✓ Sauvegardé'); }
+    if (e.key === 's') { e.preventDefault(); saveState(); showToast('✓ ' + t('saved_indicator')); }
   }
 });
 
@@ -3535,42 +3746,42 @@ function initSortable() {
   const expList = $('exp-list');
   if (expList) Sortable.create(expList, {
     handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
-    onEnd: () => { reorderFromDOM(expList, experiences, 'exp'); saveState(); renderPreview(); }
+    onEnd: () => { reorderFromDOM(expList, experiences, 'exp'); commitChange(); }
   });
 
   // Education
   const eduList = $('edu-list');
   if (eduList) Sortable.create(eduList, {
     handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
-    onEnd: () => { reorderFromDOM(eduList, education, 'edu'); saveState(); renderPreview(); }
+    onEnd: () => { reorderFromDOM(eduList, education, 'edu'); commitChange(); }
   });
 
   // Skills
   const skillsList = $('skills-list');
   if (skillsList) Sortable.create(skillsList, {
     handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
-    onEnd: () => { reorderFromDOM(skillsList, skills, 'skill'); saveState(); renderPreview(); }
+    onEnd: () => { reorderFromDOM(skillsList, skills, 'skill'); commitChange(); }
   });
 
   // Projects
   const projList = $('project-list');
   if (projList) Sortable.create(projList, {
     handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
-    onEnd: () => { reorderFromDOM(projList, projects, 'proj'); saveState(); renderPreview(); }
+    onEnd: () => { reorderFromDOM(projList, projects, 'proj'); commitChange(); }
   });
 
   // Volunteer
   const volList = $('volunteer-list');
   if (volList) Sortable.create(volList, {
     handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
-    onEnd: () => { reorderFromDOM(volList, volunteer, 'vol'); saveState(); renderPreview(); }
+    onEnd: () => { reorderFromDOM(volList, volunteer, 'vol'); commitChange(); }
   });
 
   // Publications
   const pubList = $('pub-list');
   if (pubList) Sortable.create(pubList, {
     handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
-    onEnd: () => { reorderFromDOM(pubList, publications, 'pub'); saveState(); renderPreview(); }
+    onEnd: () => { reorderFromDOM(pubList, publications, 'pub'); commitChange(); }
   });
 }
 
@@ -3643,7 +3854,11 @@ async function init() {
   renderAllTranslations();
 
   const loadedFromUrl = await loadFromUrl();
-  if (!loadedFromUrl) loadState();
+  if (!loadedFromUrl) initMultiCV();
+  else renderCVSelect(); // URL import: still render select with existing CVs
+
+  // Ensure the saved font is loaded
+  ensureFontLoaded(cvFont);
 
   populateProfile();
   renderAll();

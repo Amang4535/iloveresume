@@ -1110,6 +1110,41 @@ textarea.fl-input:not(:placeholder-shown) ~ .fl-label {
   border: none;
 }
 
+/* ── History CV badge ───────────────────────────────────────── */
+.history-cv-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: var(--accent-light);
+  color: var(--accent);
+  vertical-align: middle;
+  margin-left: 0.3rem;
+}
+
+/* ── CV Switcher ────────────────────────────────────────────── */
+.cv-select {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.78rem;
+  color: inherit;
+  max-width: 110px;
+  min-width: 60px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+.cv-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+@media (min-width: 640px) {
+  .cv-select { max-width: 150px; font-size: 0.82rem; }
+}
+
 /* ── RTL Support ───────────────────────────────────────────── */
 [dir="rtl"] .fl-wrap input,
 [dir="rtl"] .fl-wrap textarea { text-align: right; }

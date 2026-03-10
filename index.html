@@ -27,7 +27,8 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Only Inter loaded upfront (default font). Others are lazy-loaded on selection. -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Heavy libs loaded on demand via loadScript() in app.js -->
 
@@ -62,6 +63,23 @@
     <a href="index.html" class="flex items-center gap-2 shrink-0">
       <span class="text-xl font-bold tracking-tight"><span class="text-[var(--accent)]">i</span>loveresume</span>
     </a>
+
+    <!-- CV Switcher -->
+    <div class="flex items-center gap-1 min-w-0 flex-1 max-w-[210px]">
+      <select id="cv-select" class="cv-select" title="Changer de CV" aria-label="Choisir un CV"></select>
+      <button id="btn-rename-cv" class="pill-btn !p-1.5" title="Renommer ce CV" aria-label="Renommer ce CV">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+      </button>
+      <button id="btn-new-cv" class="pill-btn !p-1.5" title="Nouveau CV" aria-label="Créer un nouveau CV">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      </button>
+      <button id="btn-dup-cv" class="pill-btn !p-1.5" title="Dupliquer ce CV" aria-label="Dupliquer ce CV">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+      </button>
+      <button id="btn-delete-cv" class="pill-btn !p-1.5 text-red-400 hover:text-red-600" title="Supprimer ce CV" aria-label="Supprimer ce CV">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+      </button>
+    </div>
 
     <!-- Lang -->
     <div class="flex items-center gap-2">
