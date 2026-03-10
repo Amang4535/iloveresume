@@ -1834,7 +1834,8 @@ function genId() {
  * Use instead of the `commitChange();` pair everywhere.
  */
 function commitChange() {
-  commitChange();
+  saveState();
+  renderPreview();
 }
 
 /**
