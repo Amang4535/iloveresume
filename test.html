@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iloveresume — Unit Tests</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      padding: 2rem;
+      line-height: 1.6;
+    }
+    h1 { color: #58a6ff; font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .subtitle { color: #8b949e; margin-bottom: 2rem; font-size: 0.9rem; }
+    .suite { margin-bottom: 2rem; }
+    .suite-title {
+      color: #e6edf3;
+      font-size: 1rem;
+      font-weight: bold;
+      border-bottom: 1px solid #30363d;
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .test {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.25rem 0;
+    }
+    .badge {
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      flex-shrink: 0;
+      min-width: 3rem;
+      text-align: center;
+    }
+    .pass { background: #238636; color: #aff; }
+    .fail { background: #b91c1c; color: #ffd; }
+    .test-name { color: #c9d1d9; }
+    .test-detail { color: #8b949e; font-size: 0.82rem; margin-top: 0.1rem; }
+    .test-detail.error { color: #f85149; }
+    .summary {
+      margin-top: 2.5rem;
+      padding: 1rem 1.25rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    .summary.all-pass { background: #0d2818; border: 1px solid #238636; color: #3fb950; }
+    .summary.has-fail { background: #2d0f0f; border: 1px solid #b91c1c; color: #f85149; }
+  </style>
+</head>
+<body>
+  <h1>iloveresume — Unit Tests</h1>
+  <p class="subtitle">Pure function tests for <code>esc</code>, <code>safeUrl</code>, <code>formatDate</code>, <code>bulletsHtml</code></p>
+  <div id="output"></div>
+  <div id="summary"></div>
+
+  <!-- Load templates.js to get esc, safeUrl, formatDate, bulletsHtml -->
+  <!-- We need a minimal 'lang' global so formatDate fallback works -->
+  <script>
+    // Minimal stub: templates.js reads 'lang' as a global
+    var lang = 'fr';
+  </script>
+  <script src="templates.js"></script>
+
+  <script>
+    'use strict';
+
+    // ── Test runner ──────────────────────────────────────────────
+    const results = [];
+    let totalPass = 0;
+    let totalFail = 0;
+
+    function assert(name, condition, detail = '') {
+      const pass = Boolean(condition);
+      results.push({ name, pass, detail });
+      if (pass) totalPass++; else totalFail++;
+    }
+
+    function assertEqual(name, actual, expected) {
+      const pass = actual === expected;
+      const detail = pass ? '' : `expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`;
+      results.push({ name, pass, detail });
+      if (pass) totalPass++; else totalFail++;
+    }
+
+    function assertContains(name, str, substring) {
+      const pass = typeof str === 'string' && str.includes(substring);
+      const detail = pass ? '' : `expected to contain ${JSON.stringify(substring)}, got ${JSON.stringify(str)}`;
+      results.push({ name, pass, detail });
+      if (pass) totalPass++; else totalFail++;
+    }
+
+    function assertNotContains(name, str, substring) {
+      const pass = typeof str === 'string' && !str.includes(substring);
+      const detail = pass ? '' : `expected NOT to contain ${JSON.stringify(substring)}, got ${JSON.stringify(str)}`;
+      results.push({ name, pass, detail });
+      if (pass) totalPass++; else totalFail++;
+    }
+
+    const suites = [];
+    function suite(title, fn) {
+      const start = results.length;
+      fn();
+      suites.push({ title, tests: results.slice(start) });
+    }
+
+    // ── esc() ────────────────────────────────────────────────────
+    suite('esc()', () => {
+      assertEqual('empty string → ""',         esc(''),        '');
+      assertEqual('null → ""',                  esc(null),      '');
+      assertEqual('undefined → ""',             esc(undefined), '');
+      assertEqual('plain text passthrough',     esc('hello'),   'hello');
+      assertEqual('& → &amp;',                  esc('a & b'),   'a &amp; b');
+      assertEqual('< → &lt;',                   esc('1 < 2'),   '1 &lt; 2');
+      assertEqual('> → &gt;',                   esc('3 > 2'),   '3 &gt; 2');
+      assertEqual('" → &quot;',                 esc('"hi"'),    '&quot;hi&quot;');
+      assertEqual("' → &#39;",                  esc("it's"),    'it&#39;s');
+      assertNotContains('XSS payload: <script> escaped', esc('<script>alert(1)</script>'), '<script>');
+      assertEqual('XSS fully escaped',
+        esc('<img src=x onerror=alert(1)>'),
+        '&lt;img src=x onerror=alert(1)&gt;'
+      );
+    });
+
+    // ── safeUrl() ────────────────────────────────────────────────
+    suite('safeUrl()', () => {
+      assertEqual('empty string → ""',          safeUrl(''),        '');
+      assertEqual('null → ""',                   safeUrl(null),      '');
+      assertEqual('javascript: → "#"',           safeUrl('javascript:alert(1)'), '#');
+      assertEqual('JAVASCRIPT: (uppercase) → "#"', safeUrl('JAVASCRIPT:void(0)'), '#');
+      assertEqual('data: URI → "#"',             safeUrl('data:text/html,<b>hi</b>'), '#');
+      assertEqual('vbscript: → "#"',             safeUrl('vbscript:msgbox()'), '#');
+      assertContains('mailto: passthrough',      safeUrl('mailto:test@example.com'), 'mailto:');
+      assertContains('tel: passthrough',         safeUrl('tel:+33123456789'), 'tel:');
+      assertContains('https:// passthrough',     safeUrl('https://example.com'), 'https://example.com');
+      assertContains('http:// passthrough',      safeUrl('http://example.com'), 'http://');
+      assertContains('no-scheme → https:// prepended', safeUrl('example.com'), 'https://example.com');
+    });
+
+    // ── formatDate() ─────────────────────────────────────────────
+    suite('formatDate()', () => {
+      assertEqual('empty string → ""',   formatDate(''),     '');
+      assertEqual('null → ""',           formatDate(null),   '');
+
+      // Year-only
+      const yearOnly = formatDate('2023');
+      assertEqual('year-only returns year string', yearOnly, '2023');
+
+      // YYYY-MM with fr
+      const frDate = formatDate('2023-03', 'fr');
+      assert('YYYY-MM fr: contains "2023"', frDate.includes('2023'));
+      assert('YYYY-MM fr: non-empty', frDate.length > 0);
+
+      // YYYY-MM with en
+      const enDate = formatDate('2023-03', 'en');
+      assert('YYYY-MM en: contains "2023"', enDate.includes('2023'));
+      // English typically produces "Mar 2023" style
+      assert('YYYY-MM en: non-empty', enDate.length > 0);
+
+      // YYYY-MM with ar
+      const arDate = formatDate('2023-03', 'ar');
+      assert('YYYY-MM ar: non-empty', arDate.length > 0);
+
+      // fr vs en should differ for month names
+      assert('fr and en month names differ', frDate !== enDate);
+    });
+
+    // ── bulletsHtml() ────────────────────────────────────────────
+    suite('bulletsHtml()', () => {
+      assertEqual('empty string → ""',  bulletsHtml(''),    '');
+      assertEqual('null → ""',          bulletsHtml(null),  '');
+
+      // Single line → <ul> with one <li>
+      const single = bulletsHtml('Built REST API');
+      assertContains('single line: has <ul>',  single, '<ul');
+      assertContains('single line: has <li>',  single, '<li');
+      assertContains('single line: text in li', single, 'Built REST API');
+      assert('single line: exactly one <li>',  (single.match(/<li/g) || []).length === 1);
+
+      // XSS content escaped
+      const xss = bulletsHtml('<script>alert(1)</script>');
+      assertNotContains('XSS: no raw <script> in output', xss, '<script>');
+      assertContains('XSS: escaped &lt;script&gt; in output', xss, '&lt;script&gt;');
+
+      // Multiple lines
+      const multi = bulletsHtml('Line one\nLine two\nLine three');
+      assert('multiple lines: 3 <li> elements', (multi.match(/<li/g) || []).length === 3);
+
+      // Blank lines ignored
+      const blanks = bulletsHtml('First\n\n\nSecond');
+      assert('blank lines ignored: 2 <li> elements', (blanks.match(/<li/g) || []).length === 2);
+    });
+
+    // ── Render ───────────────────────────────────────────────────
+    const output = document.getElementById('output');
+    suites.forEach(s => {
+      const div = document.createElement('div');
+      div.className = 'suite';
+      div.innerHTML = `<div class="suite-title">${s.title}</div>` +
+        s.tests.map(test => `
+          <div class="test">
+            <span class="badge ${test.pass ? 'pass' : 'fail'}">${test.pass ? 'PASS' : 'FAIL'}</span>
+            <div>
+              <div class="test-name">${test.name}</div>
+              ${test.detail ? `<div class="test-detail ${test.pass ? '' : 'error'}">${test.detail}</div>` : ''}
+            </div>
+          </div>`).join('');
+      output.appendChild(div);
+    });
+
+    const summaryEl = document.getElementById('summary');
+    const allPass = totalFail === 0;
+    summaryEl.className = `summary ${allPass ? 'all-pass' : 'has-fail'}`;
+    summaryEl.textContent = allPass
+      ? `✓ All ${totalPass} tests passed`
+      : `✗ ${totalFail} failed, ${totalPass} passed (${totalPass + totalFail} total)`;
+  </script>
+</body>
+</html>
