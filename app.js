@@ -1794,6 +1794,30 @@ const LIBS = {
   sortable: 'https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.3/Sortable.min.js',
 };
 
+// ── localStorage safe wrapper ─────────────────────────────────
+
+/**
+ * Wraps localStorage.setItem with QuotaExceededError handling.
+ * On quota error: shows a user-friendly toast and returns false.
+ * @returns {boolean} true on success, false on quota error
+ */
+function safeSetItem(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    if (e instanceof DOMException && (
+      e.code === 22 || e.code === 1014 ||
+      e.name === 'QuotaExceededError' ||
+      e.name === 'NS_ERROR_DOM_QUOTA_REACHED'
+    )) {
+      showToast('⚠️ Stockage plein — supprimez des CVs ou des photos pour libérer de l\'espace.', 5000);
+      console.warn('[iloveresume] localStorage quota exceeded for key:', key);
+    }
+    return false;
+  }
+}
+
 // ── State ─────────────────────────────────────────────────────
 
 let lang = 'fr';
@@ -1908,7 +1932,7 @@ function initDark() {
 
 function toggleDark() {
   const isDark = document.documentElement.classList.toggle('dark');
-  localStorage.setItem('iloveresume_dark', isDark ? '1' : '0');
+  safeSetItem('iloveresume_dark', isDark ? '1' : '0');
   updateDarkIcon(isDark);
 }
 
@@ -1934,7 +1958,7 @@ const LANG_FONT_MAP = {
 function setLang(code) {
   if (!T[code]) return;
   lang = code;
-  localStorage.setItem('iloveresume_lang', code);
+  safeSetItem('iloveresume_lang', code);
   // Auto-load the font required for this language (e.g. Noto Arabic for ar/he)
   if (LANG_FONT_MAP[code]) ensureFontLoaded(LANG_FONT_MAP[code]);
   updateLangUI();
@@ -3208,7 +3232,7 @@ function saveToHistory() {
   };
   history.unshift(entry);
   const trimmed = history.slice(0, 20);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+  safeSetItem(HISTORY_KEY, JSON.stringify(trimmed));
 }
 
 function getHistory() {
@@ -3261,7 +3285,7 @@ function loadFromHistory(id) {
   list.activeCvId = newId;
   saveCVList(list);
   importState(entry.state);
-  localStorage.setItem(CV_PREFIX + newId, entry.state);
+  safeSetItem(CV_PREFIX + newId, entry.state);
   renderAll();
   syncDesignUI();
   renderAllTranslations();
@@ -3279,7 +3303,7 @@ function duplicateFromHistory(id) {
 function deleteFromHistory(id) {
   let history = getHistory();
   history = history.filter(h => h.id !== id);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  safeSetItem(HISTORY_KEY, JSON.stringify(history));
   renderHistoryModal();
 }
 
@@ -3311,12 +3335,12 @@ function _doSaveState() {
   const json = exportState();
   const list = getCVList();
   if (list.activeCvId) {
-    localStorage.setItem(CV_PREFIX + list.activeCvId, json);
+    safeSetItem(CV_PREFIX + list.activeCvId, json);
     // Update timestamp in index
     const cv = list.cvs.find(c => c.id === list.activeCvId);
     if (cv) { cv.updatedAt = Date.now(); saveCVList(list); }
   } else {
-    localStorage.setItem(STATE_KEY, json); // fallback
+    safeSetItem(STATE_KEY, json); // fallback
   }
   clearTimeout(_saveIndicatorTimer);
   _saveIndicatorTimer = setTimeout(() => {
@@ -3340,7 +3364,7 @@ function getCVList() {
 }
 
 function saveCVList(data) {
-  localStorage.setItem(CVLIST_KEY, JSON.stringify(data));
+  safeSetItem(CVLIST_KEY, JSON.stringify(data));
 }
 
 function initMultiCV() {
@@ -3353,7 +3377,7 @@ function initMultiCV() {
       activeCvId: firstId,
       cvs: [{ id: firstId, name: 'Mon CV', createdAt: Date.now(), updatedAt: Date.now() }],
     };
-    if (oldState) localStorage.setItem(CV_PREFIX + firstId, oldState);
+    if (oldState) safeSetItem(CV_PREFIX + firstId, oldState);
     saveCVList(list);
   }
   // Load active CV state
@@ -3418,7 +3442,7 @@ function duplicateCurrentCV() {
   const stateJson = exportState();
   list.cvs.push({ id, name, createdAt: Date.now(), updatedAt: Date.now() });
   list.activeCvId = id;
-  localStorage.setItem(CV_PREFIX + id, stateJson);
+  safeSetItem(CV_PREFIX + id, stateJson);
   saveCVList(list);
   renderCVSelect();
   showToast('✓ CV dupliqué');
