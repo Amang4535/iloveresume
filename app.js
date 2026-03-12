@@ -1989,9 +1989,16 @@ function syncDesignUI() {
 
 // ── Share by link ─────────────────────────────────────────────
 
-async function buildShareUrl() {
+const SHARE_URL_WARN_BYTES = 8000;
+const SHARE_URL_MAX_BYTES = 16000;
+
+async function buildShareUrl(stripPhoto = false) {
   await loadScript(LIBS.pako);
-  const json = exportState();
+  let stateObj = JSON.parse(exportState());
+  if (stripPhoto && stateObj.profile) {
+    stateObj = { ...stateObj, profile: { ...stateObj.profile, photoB64: '' } };
+  }
+  const json = JSON.stringify(stateObj);
   const compressed = pako.deflate(new TextEncoder().encode(json));
   // Chunked encoding to avoid "Maximum call stack size exceeded" on large CVs
   let binary = '';
@@ -2018,9 +2025,32 @@ async function loadFromUrl() {
 }
 
 async function renderShareModal() {
-  const url = await buildShareUrl();
-  $('share-url').value = url;
   $('share-copied').classList.add('hidden');
+
+  // Remove stale warning
+  const staleWarn = $('share-url-warning');
+  if (staleWarn) staleWarn.remove();
+
+  let url = await buildShareUrl(false);
+  let warningHtml = '';
+
+  if (url.length > SHARE_URL_MAX_BYTES) {
+    // Re-generate without photo
+    url = await buildShareUrl(true);
+    warningHtml = `<div id="share-url-warning" style="margin-top:0.5rem;padding:0.5rem 0.75rem;background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;color:#92400e;font-size:0.85rem;">
+      ⚠️ Photo exclue du lien — URL trop longue (>${SHARE_URL_MAX_BYTES} octets).
+    </div>`;
+  } else if (url.length > SHARE_URL_WARN_BYTES) {
+    warningHtml = `<div id="share-url-warning" style="margin-top:0.5rem;padding:0.5rem 0.75rem;background:#fff7ed;border:1px solid #fb923c;border-radius:6px;color:#9a3412;font-size:0.85rem;">
+      ⚠️ Lien long (${url.length} octets) — peut ne pas fonctionner partout.
+    </div>`;
+  }
+
+  $('share-url').value = url;
+
+  if (warningHtml) {
+    $('share-url').insertAdjacentHTML('afterend', warningHtml);
+  }
 }
 
 $('btn-copy-link').addEventListener('click', () => {
