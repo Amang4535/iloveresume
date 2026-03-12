@@ -21,9 +21,6 @@
   <meta name="twitter:title" content="iloveresume — Free Resume Builder" />
   <meta name="twitter:description" content="Create professional resumes for free. 12 templates, 14 languages, PDF export. 100% private, no sign-up." />
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,20 +29,8 @@
 
   <!-- Heavy libs loaded on demand via loadScript() in app.js -->
 
+  <link rel="stylesheet" href="tailwind.css" />
   <link rel="stylesheet" href="style.css" />
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200" style="font-family: Inter, sans-serif;">
 
